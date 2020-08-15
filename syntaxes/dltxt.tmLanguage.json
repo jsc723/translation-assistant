@@ -1,0 +1,165 @@
+{
+	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+	"name": "Double Line TXT for translation",
+	"patterns": [
+		{
+			"include": "#st.original"
+		},
+		{
+			"include": "#st.translated"
+		},
+		{
+			"include": "#st.nme.original"
+		},
+		{
+			"include": "#st.nme.translated"
+		},
+		{
+			"include": "#st.ctl.original"
+		},
+		{
+			"include": "#st.ctl.translated"
+		},
+		{
+			"include": "#br.original"
+		},
+		{
+			"include": "#br.translated"
+		},
+		{
+			"include": "#br.ctl.original"
+		},
+		{
+			"include": "#br.ctl.translated"
+		}
+	],
+	"repository": {
+		"st.original": {
+			"begin": "★(txt)?\\d+★",
+			"end" : "$",
+			"beginCaptures": {
+				"0" : { "name" : "st.original.tag" }
+			},
+			"patterns" : [
+				{
+					"match": ".*",
+					"name" : "original.txt"
+				}
+			],
+			"name" : "st.original.group"
+		},
+		"st.translated": {
+			"begin": "☆(txt)?\\d+☆",
+			"end" : "$",
+			"beginCaptures": {
+				"0" : { "name" : "st.translated.tag" }
+			},
+			"patterns" : [
+				{
+					"match": ".*",
+					"name" : "translated.txt"
+				}
+			],
+			"name" : "st.translated.group"
+		},
+		"st.nme.original": {
+			"match": "(★nme\\d+★)(.*)",
+			"captures": {
+				"1": { "name" : "st.nme.original.tag" },
+				"2": { "name" : "st.nme.original.txt" }
+			}
+		},
+		"st.nme.translated": {
+			"match": "(☆nme\\d+☆)(.*)",
+			"captures": {
+				"1": { "name" : "st.nme.translated.tag" },
+				"2": { "name" : "st.nme.translated.txt" }
+			}
+		},
+		"st.ctl.original": {
+			"begin": "★(scn|slt)\\d+★",
+			"end" : "$",
+			"beginCaptures": {
+				"0" : { "name" : "ctl.original.tag" }
+			},
+			"patterns" : [
+				{
+					"match": ".*",
+					"name" : "ctl.original.txt"
+				}
+			],
+			"name" : "st.original.group"
+		},
+		"st.ctl.translated": {
+			"begin": "☆(scn|slt)\\d+☆",
+			"end" : "$",
+			"beginCaptures": {
+				"0" : { "name" : "ctl.translated.tag" }
+			},
+			"patterns" : [
+				{
+					"match": ".*",
+					"name" : "ctl.translated.txt"
+				}
+			],
+			"name" : "original.group"
+		},
+		"br.original": {
+			"begin": "\\[0x[0-9a-f]+\\](?=$|[^@])",
+			"end" : "$",
+			"beginCaptures": {
+				"0" : { "name" : "br.original.tag" }
+			},
+			"patterns" : [
+				{
+					"match": ".*",
+					"name" : "original.txt"
+				}
+			],
+			"name" : "br.original.group"
+		},
+		"br.translated": {
+			"begin": ";\\[0x[0-9a-f]+\\](?=$|[^@])",
+			"end" : "$",
+			"beginCaptures": {
+				"0" : { "name" : "br.translated.tag" }
+			},
+			"patterns" : [
+				{
+					"match": ".*",
+					"name" : "translated.txt"
+				}
+			],
+			"name" : "br.translated.group"
+		},
+		"br.ctl.original": {
+			"begin": "\\[0x[0-9a-f]+\\]@",
+			"end" : "$",
+			"beginCaptures": {
+				"0" : { "name" : "ctl.original.tag" }
+			},
+			"patterns" : [
+				{
+					"match": ".*",
+					"name" : "ctl.original.txt"
+				}
+			],
+			"name" : "br.original.group"
+		},
+		"br.ctl.translated": {
+			"begin": ";\\[0x[0-9a-f]+\\]@",
+			"end" : "$",
+			"beginCaptures": {
+				"0" : { "name" : "ctl.translated.tag" }
+			},
+			"patterns" : [
+				{
+					"match": ".*",
+					"name" : "ctl.translated.txt"
+				}
+			],
+			"name" : "br.translated.group"
+		}
+	},
+	"scopeName": "source.txt"
+}

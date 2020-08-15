@@ -1,0 +1,118 @@
+{
+	"name": "translateassistant",
+	"displayName": "TranslateAssistant",
+	"publisher": "jsc723",
+	"description": "",
+	"version": "0.0.1",
+	"engines": {
+		"vscode": "^1.47.0"
+	},
+	"categories": [
+		"Programming Languages"
+	],
+	"activationEvents": [
+		"onLanguage:dltxt",
+		"onCommand:Extension.setGame",
+		"onCommand:Extension.context_menu_insert",
+		"onCommand:Extension.context_menu_update"
+	],
+	"main": "./out/extension.js",
+	"contributes": {
+		"languages": [
+			{
+				"id": "dltxt",
+				"aliases": [
+					"Double Line TXT for translation",
+					"dltxt"
+				],
+				"extensions": [
+					".txt"
+				],
+				"configuration": "./language-configuration.json"
+			}
+		],
+		"grammars": [
+			{
+				"language": "dltxt",
+				"scopeName": "source.txt",
+				"path": "./syntaxes/dltxt.tmLanguage.json"
+			}
+		],
+		"themes": [
+			{
+				"label": "dltxtTheme",
+				"uiTheme": "vs-dark",
+				"path": "theme.json"
+			}
+		],
+		"commands": [
+			{
+				"command": "Extension.dltxt.context_menu_insert",
+				"title": "DLTXT: translation"
+			},
+			{
+				"command": "Extension.dltxt.context_menu_update",
+				"title": "DLTXT: overwrite existing translation"
+			},
+			{
+				"command": "Extension.dltxt.setGame",
+				"title": "DLTXT: Set Game"
+			},
+			{
+				"command": "Extension.dltxt.next",
+				"title": "DLTXT: Goto Next Line"
+			},
+			{
+				"command": "Extension.dltxt.prev",
+				"title": "DLTXT: Goto Prev Line"
+			}
+		],
+		"keybindings":[
+			{
+				"command": "Extension.dltxt.next",
+				"key": "alt+enter"
+			},
+			{
+				"command": "Extension.dltxt.prev",
+				"key": "alt+\\"
+			}
+		],
+		"menus": {
+			"editor/context": [
+				{
+					"when": "editorHasSelection",
+					"command": "Extension.dltxt.context_menu_insert"
+				},
+				{
+					"when": "editorHasSelection",
+					"command": "Extension.dltxt.context_menu_update"
+				}
+			]
+		}
+	},
+	"scripts": {
+		"vscode:prepublish": "npm run compile",
+		"compile": "tsc -p ./",
+		"lint": "eslint src --ext ts",
+		"watch": "tsc -watch -p ./",
+		"pretest": "npm run compile && npm run lint",
+		"test": "node ./out/test/runTest.js"
+	},
+	"devDependencies": {
+		"@types/glob": "^7.1.1",
+		"@types/mocha": "^7.0.2",
+		"@types/node": "^13.11.0",
+		"@types/vscode": "^1.47.0",
+		"@typescript-eslint/eslint-plugin": "^2.30.0",
+		"@typescript-eslint/parser": "^2.30.0",
+		"eslint": "^6.8.0",
+		"glob": "^7.1.6",
+		"mocha": "^7.1.2",
+		"typescript": "^3.8.3",
+		"vscode-test": "^1.3.0"
+	},
+	"dependencies": {
+		"axios": "^0.19.2",
+		"request": "^2.88.2"
+	}
+}
