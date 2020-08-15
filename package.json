@@ -2,8 +2,9 @@
 	"name": "translateassistant",
 	"displayName": "TranslateAssistant",
 	"publisher": "jsc723",
+	"icon": "assets/logo.png",
 	"description": "",
-	"version": "0.1.1",
+	"version": "0.1.2",
 	"engines": {
 		"vscode": "^1.47.0"
 	},
