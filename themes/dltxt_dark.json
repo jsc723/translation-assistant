@@ -1,9 +1,7 @@
 {
-  "name": "dltxtTheme",
+  "name": "DLTXT Dark+",
   "type": "dark",
-  "colors": {
-    
-  },
+  "include": "./dark_plus.json",
   "tokenColors": [
     {
       "name": "Tags",

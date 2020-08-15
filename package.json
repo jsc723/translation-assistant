@@ -3,7 +3,7 @@
 	"displayName": "TranslateAssistant",
 	"publisher": "jsc723",
 	"description": "",
-	"version": "0.0.1",
+	"version": "0.1.1",
 	"engines": {
 		"vscode": "^1.47.0"
 	},
@@ -22,8 +22,7 @@
 			{
 				"id": "dltxt",
 				"aliases": [
-					"Double Line TXT for translation",
-					"dltxt"
+					"Double Line TXT for translation"
 				],
 				"extensions": [
 					".txt"
@@ -40,9 +39,9 @@
 		],
 		"themes": [
 			{
-				"label": "dltxtTheme",
+				"label": "DLTXT Dark+",
 				"uiTheme": "vs-dark",
-				"path": "theme.json"
+				"path": "themes/dltxt_dark.json"
 			}
 		],
 		"commands": [
@@ -114,5 +113,9 @@
 	"dependencies": {
 		"axios": "^0.19.2",
 		"request": "^2.88.2"
-	}
+	},
+	"repository": {
+    "type": "git",
+    "url": "https://github.com/jsc723/translation-assistant.git"
+  }
 }
