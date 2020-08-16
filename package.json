@@ -4,7 +4,7 @@
 	"publisher": "jsc723",
 	"icon": "assets/logo.png",
 	"description": "",
-	"version": "0.2.0",
+	"version": "0.2.1",
 	"engines": {
 		"vscode": "^1.47.0"
 	},
@@ -93,12 +93,12 @@
       "properties": {
         "dltxt.originalTextPrefixRegex": {
           "type": "string",
-          "default": "★[a-z0-9]+★",
+          "default": "(\\[[a-z0-9]+\\])|((★|○)[a-z0-9]+(★|○))|((<\\d+>)?//))",
           "description": "Original Text Prefix"
         },
         "dltxt.translatedTextPrefixRegex": {
           "type": "string",
-          "default": "☆[a-z0-9]+☆",
+          "default": "(;\\[[a-z0-9]+\\])|((☆|●)[a-z0-9]+(☆|●))|(<\\d+>(?!//))|((//[^\n]*\n)(?!<\\d+>))",
           "description": "Translated Text Prefix"
         }
       }

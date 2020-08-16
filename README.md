@@ -1,4 +1,4 @@
-# translateassistant README
+# DLTxT Translate Assistant README
 
 Translation Assistant for double-line-txt-file-for-translation, which looks like any one of these:
 ```
@@ -44,12 +44,12 @@ NULL
 ## Tips
 
 - For a better experience, **in your workspace folder**,
-  goto `Settings` (left-bottom corner) 
-  -> Search for `editor.wordSeparators` 
-  -> Set it to ``~`!@#$%^&*()-=+[{]}\|;:'",.<>/?★☆○●「」『』，、。！？…``
-  -> Search for `font family`
-  -> Click on `Workspace` tab
-  -> Set `Editor: Font Family` field to  `SimHei` or your favorite font.
+  goto `Settings` (left-bottom corner) <br>
+  -> Search for `editor.wordSeparators` <br>
+  -> Set it to ``~`!@#$%^&*()-=+[{]}\|;:'",.<>/?★☆○●「」『』，、。！？…`` (This allows you to use `ctrl+Left` `ctrl+right` to nagivate between words.) <br>
+  -> Search for `font family` <br>
+  -> Click on `Workspace` tab <br>
+  -> Set `Editor: Font Family` field to  `SimHei` or your favorite font. <br>
 
 
 ## Requirements
