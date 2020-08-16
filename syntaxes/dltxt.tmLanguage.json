@@ -9,33 +9,33 @@
 			"include": "#st.translated"
 		},
 		{
+			"include": "#slash.infer.nme"
+		},
+		{
+			"include": "#slash.infer.txt"
+		},
+		{
 			"include": "#st.nme.original"
 		},
 		{
 			"include": "#st.nme.translated"
 		},
 		{
+			"include": "#infer.nme"
+		},
+		{
+			"include": "#infer.txt"
+		},
+		{
 			"include": "#st.ctl.original"
 		},
 		{
 			"include": "#st.ctl.translated"
-		},
-		{
-			"include": "#br.original"
-		},
-		{
-			"include": "#br.translated"
-		},
-		{
-			"include": "#br.ctl.original"
-		},
-		{
-			"include": "#br.ctl.translated"
 		}
 	],
 	"repository": {
 		"st.original": {
-			"begin": "★(txt)?\\d+★",
+			"begin": "(★|○)txt\\d+(★|○)",
 			"end" : "$",
 			"beginCaptures": {
 				"0" : { "name" : "st.original.tag" }
@@ -49,7 +49,7 @@
 			"name" : "st.original.group"
 		},
 		"st.translated": {
-			"begin": "☆(txt)?\\d+☆",
+			"begin": "(☆|●)txt\\d+(☆|●)",
 			"end" : "$",
 			"beginCaptures": {
 				"0" : { "name" : "st.translated.tag" }
@@ -61,6 +61,56 @@
 				}
 			],
 			"name" : "st.translated.group"
+		},
+		"lt.original": {
+			"begin": "<[a-zA-Z0-9]*>//",
+			"end" : "$",
+			"beginCaptures": {
+				"0" : { "name" : "st.original.tag" }
+			},
+			"patterns" : [
+				{
+					"match": ".*",
+					"name" : "original.txt"
+				}
+			],
+			"name" : "st.original.group"
+		},
+		"lt.translated": {
+			"begin": "<[a-zA-Z0-9]*>(?!//)",
+			"end" : "$",
+			"beginCaptures": {
+				"0" : { "name" : "st.translated.tag" }
+			},
+			"patterns" : [
+				{
+					"match": ".*",
+					"name" : "translated.txt"
+				}
+			],
+			"name" : "st.translated.group"
+		},
+		"slash.infer.nme": {
+			"begin": "^(//)([^<>\n\u3000-\u303F\uFF1F\uFF01\uFF1A\uFF1B\u2026\u2014\uFF0C]*\n)",
+			"end" : "^.*$",
+			"beginCaptures": {
+				"0" : { "name": "st.nme.original.tag" },
+				"2" : { "name": "st.nme.original.txt" }
+			},
+			"endCaptures": {
+				"0" : { "name": "st.nme.translated.txt" }
+			}
+		},
+		"slash.infer.txt": {
+			"begin": "^(//)([^\n]*?[<>\u3000-\u303F\uFF1F\uFF01\uFF1A\uFF1B\u2026\u2014\uFF0C].*\n)",
+			"end" : "^.*$",
+			"beginCaptures": {
+				"0" : { "name": "st.original.tag" },
+				"2" : { "name": "original.txt" }
+			},
+			"endCaptures": {
+				"0" : { "name": "translated.txt" }
+			}
 		},
 		"st.nme.original": {
 			"match": "(★nme\\d+★)(.*)",
@@ -74,6 +124,36 @@
 			"captures": {
 				"1": { "name" : "st.nme.translated.tag" },
 				"2": { "name" : "st.nme.translated.txt" }
+			}
+		},
+		"test": {
+			"begin": "<%\\s*\n",
+			"beginCaptures": {"0": {"name": "begin"}},
+			"end": "%>",
+			"endCaptures": {"0": {"name": "end"}}
+		},
+		"infer.nme": {
+			"begin": "^((★|○)\\d+(★|○)|\\[0x[0-9a-f]+\\]|<[a-zA-Z0-9]*>//)([^\u3000-\u303F\uFF1F\uFF01\uFF1A\uFF1B\u2026\u2014\uFF0C]*\n)",
+			"end" : "((☆|●)\\d+(☆|●)|;\\[0x[0-9a-f]+\\]|<[a-zA-Z0-9]*>(?!//))(.*)$",
+			"beginCaptures": {
+				"0" : { "name": "st.nme.original.tag" },
+				"4" : { "name": "st.nme.original.txt" }
+			},
+			"endCaptures": {
+				"0" : { "name": "st.nme.translated.tag" },
+				"4" : { "name": "st.nme.translated.txt" }
+			}
+		},
+		"infer.txt": {
+			"begin": "^((★|○)\\d+(★|○)|\\[0x[0-9a-f]+\\]|<[a-zA-Z0-9]*>//)(.*[\u3000-\u303F\uFF1F\uFF01\uFF1A\uFF1B\u2026\u2014\uFF0C].*\n)",
+			"end" : "((☆|●)\\d+(☆|●)|;\\[0x[0-9a-f]+\\]|<[a-zA-Z0-9]*>(?!//))(.*)$",
+			"beginCaptures": {
+				"0" : { "name": "st.original.tag" },
+				"4" : { "name": "original.txt" }
+			},
+			"endCaptures": {
+				"0" : { "name": "st.translated.tag" },
+				"4" : { "name": "translated.txt" }
 			}
 		},
 		"st.ctl.original": {
@@ -103,62 +183,6 @@
 				}
 			],
 			"name" : "original.group"
-		},
-		"br.original": {
-			"begin": "\\[0x[0-9a-f]+\\](?=$|[^@])",
-			"end" : "$",
-			"beginCaptures": {
-				"0" : { "name" : "br.original.tag" }
-			},
-			"patterns" : [
-				{
-					"match": ".*",
-					"name" : "original.txt"
-				}
-			],
-			"name" : "br.original.group"
-		},
-		"br.translated": {
-			"begin": ";\\[0x[0-9a-f]+\\](?=$|[^@])",
-			"end" : "$",
-			"beginCaptures": {
-				"0" : { "name" : "br.translated.tag" }
-			},
-			"patterns" : [
-				{
-					"match": ".*",
-					"name" : "translated.txt"
-				}
-			],
-			"name" : "br.translated.group"
-		},
-		"br.ctl.original": {
-			"begin": "\\[0x[0-9a-f]+\\]@",
-			"end" : "$",
-			"beginCaptures": {
-				"0" : { "name" : "ctl.original.tag" }
-			},
-			"patterns" : [
-				{
-					"match": ".*",
-					"name" : "ctl.original.txt"
-				}
-			],
-			"name" : "br.original.group"
-		},
-		"br.ctl.translated": {
-			"begin": ";\\[0x[0-9a-f]+\\]@",
-			"end" : "$",
-			"beginCaptures": {
-				"0" : { "name" : "ctl.translated.tag" }
-			},
-			"patterns" : [
-				{
-					"match": ".*",
-					"name" : "ctl.translated.txt"
-				}
-			],
-			"name" : "br.translated.group"
 		}
 	},
 	"scopeName": "source.txt"

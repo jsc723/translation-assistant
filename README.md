@@ -1,25 +1,37 @@
 # translateassistant README
 
-Translation Assistant for double-line-txt-file-for-translation, which looks like:
+Translation Assistant for double-line-txt-file-for-translation, which looks like any one of these:
 ```
-★scn00000★title of the scene
-☆scn00000☆translated title
+★00000002★ text
+☆00000002☆ text
+－－－－－－－－－－－－－－－－－－－
+○000000○ text
+●000000● text
+－－－－－－－－－－－－－－－－－－－
+★scn00000★ text
+☆scn00000☆ text
 
+★nme00001★ text
+☆nme00001☆ text
 
-★nme00001★people's name
-☆nme00001☆translated name
-
-
-★txt00002★「some text」
-☆txt00002☆「translated text」
-
-
-★nme00003★another name
-☆nme00003☆translated name of above
-
-
-★slt00004★text of a selection
-☆slt00004☆translated text of a selection
+★txt00002★ text
+☆txt00002☆ text
+－－－－－－－－－－－－－－－－－－－
+[0x00000000] text
+;[0x00000000] text
+－－－－－－－－－－－－－－－－－－－
+@2
+//Name:NULL
+NULL
+//ReplaceName:NULL
+NULL
+//Text:...
+...
+－－－－－－－－－－－－－－－－－－－
+<0>//Name: text
+<0>Name:
+<1>//text
+<1>text
 ```
 
 ## Features
@@ -28,6 +40,16 @@ Translation Assistant for double-line-txt-file-for-translation, which looks like
 - hotkey to nagivate 
   - `Alt + Enter` go to next line to edit
   - `Alt + \` go to previous line to edit
+
+## Tips
+
+- For a better experience, **in your workspace folder**,
+  goto `Settings` (left-bottom corner) 
+  -> Search for `editor.wordSeparators` 
+  -> Set it to ``~`!@#$%^&*()-=+[{]}\|;:'",.<>/?★☆○●「」『』，、。！？…``
+  -> Search for `font family`
+  -> Click on `Workspace` tab
+  -> Set `Editor: Font Family` field to  `SimHei` or your favorite font.
 
 
 ## Requirements
@@ -38,7 +60,14 @@ Translation Assistant for double-line-txt-file-for-translation, which looks like
 
 ## Release Notes
 
-### v0.1
+### 0.2
+- syntax highlights for common formats
+  - auto name tag inferring
+- hotkey support for common formats
+  - the format is customizable if your format is not in common formats
+
+
+### 0.1
 - syntax highlights for certain double-line-txt-files-for-translation
 - hotkey to nagivate 
   - `Alt + Enter` go to next line to edit

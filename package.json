@@ -1,10 +1,10 @@
 {
 	"name": "translateassistant",
-	"displayName": "TranslateAssistant",
+	"displayName": "Translate Assistant for Double Line TxT Files",
 	"publisher": "jsc723",
 	"icon": "assets/logo.png",
 	"description": "",
-	"version": "0.1.2",
+	"version": "0.2.0",
 	"engines": {
 		"vscode": "^1.47.0"
 	},
@@ -27,8 +27,7 @@
 				],
 				"extensions": [
 					".txt"
-				],
-				"configuration": "./language-configuration.json"
+				]
 			}
 		],
 		"grammars": [
@@ -88,7 +87,22 @@
 					"command": "Extension.dltxt.context_menu_update"
 				}
 			]
-		}
+		},
+		"configuration": {
+      "title": "dltxt",
+      "properties": {
+        "dltxt.originalTextPrefixRegex": {
+          "type": "string",
+          "default": "★[a-z0-9]+★",
+          "description": "Original Text Prefix"
+        },
+        "dltxt.translatedTextPrefixRegex": {
+          "type": "string",
+          "default": "☆[a-z0-9]+☆",
+          "description": "Translated Text Prefix"
+        }
+      }
+    }
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",

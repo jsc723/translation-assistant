@@ -21,8 +21,7 @@
           "original.txt"
       ],
       "settings": {
-          "foreground": "#eee",
-          "fontStyle": "bold"
+          "foreground": "#eee"
       }
     },
     {
@@ -31,8 +30,7 @@
           "translated.txt"
       ],
       "settings": {
-          "foreground": "#c2c2c2",
-          "fontStyle": "bold"
+          "foreground": "#c2c2c2"
       }
     },
     {
@@ -42,7 +40,7 @@
           "st.nme.translated.tag"
       ],
       "settings": {
-          "foreground": "#773131"
+          "foreground": "#6082a9"
       }
     },
     {
@@ -52,7 +50,7 @@
           "st.nme.translated.txt"
       ],
       "settings": {
-          "foreground": "#eb8989"
+          "foreground": "#7cb8c5"
       }
     },
     {
@@ -62,7 +60,7 @@
           "ctl.translated.tag"
       ],
       "settings": {
-          "foreground": "#6082a9"
+          "foreground": "#a04040"
       }
     },
     {
@@ -72,7 +70,7 @@
           "ctl.translated.txt"
       ],
       "settings": {
-          "foreground": "#7cb8c5"
+          "foreground": "#fcb1b1"
       }
     },
     {
@@ -81,8 +79,7 @@
           "source.txt"
       ],
       "settings": {
-          "foreground": "#fff0ad",
-          "fontStyle": "bold"
+          "foreground": "#fff0ad"
       }
     }
   ]
