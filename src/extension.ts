@@ -142,6 +142,7 @@ export function activate(context: vscode.ExtensionContext) {
 				console.log(result);
 				if (result) {
 					context.workspaceState.update(`${GameTitle}.dict`, result.data);
+					updateDecorations();
 				}
 			});
 		}
@@ -160,8 +161,9 @@ export function activate(context: vscode.ExtensionContext) {
 					fullURL = encodeURI(fullURL);
 					axios.get(fullURL)
 						.then(response => {
-							if (response.data.Result === 'True')
+							if (response.data.Result === 'True') {
 								vscode.window.showInformationMessage("Insert Success!\n" + msg);
+							}
 							else
 								vscode.window.showInformationMessage("unexpected json returned:\n" + response.data.Message);
 						})
