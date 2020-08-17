@@ -8,11 +8,12 @@
 		{
 			"include": "#st.translated"
 		},
+		
 		{
-			"include": "#slash.infer.nme"
+			"include": "#st.ctl.original"
 		},
 		{
-			"include": "#slash.infer.txt"
+			"include": "#st.ctl.translated"
 		},
 		{
 			"include": "#st.nme.original"
@@ -21,16 +22,16 @@
 			"include": "#st.nme.translated"
 		},
 		{
+			"include": "#slash.infer.nme"
+		},
+		{
+			"include": "#slash.infer.txt"
+		},
+		{
 			"include": "#infer.nme"
 		},
 		{
 			"include": "#infer.txt"
-		},
-		{
-			"include": "#st.ctl.original"
-		},
-		{
-			"include": "#st.ctl.translated"
 		}
 	],
 	"repository": {
@@ -62,56 +63,8 @@
 			],
 			"name" : "st.translated.group"
 		},
-		"lt.original": {
-			"begin": "<[a-zA-Z0-9]*>//",
-			"end" : "$",
-			"beginCaptures": {
-				"0" : { "name" : "st.original.tag" }
-			},
-			"patterns" : [
-				{
-					"match": ".*",
-					"name" : "original.txt"
-				}
-			],
-			"name" : "st.original.group"
-		},
-		"lt.translated": {
-			"begin": "<[a-zA-Z0-9]*>(?!//)",
-			"end" : "$",
-			"beginCaptures": {
-				"0" : { "name" : "st.translated.tag" }
-			},
-			"patterns" : [
-				{
-					"match": ".*",
-					"name" : "translated.txt"
-				}
-			],
-			"name" : "st.translated.group"
-		},
-		"slash.infer.nme": {
-			"begin": "^(//)([^<>\n\u3000-\u303F\uFF1F\uFF01\uFF1A\uFF1B\u2026\u2014\uFF0C]*\n)",
-			"end" : "^.*$",
-			"beginCaptures": {
-				"0" : { "name": "st.nme.original.tag" },
-				"2" : { "name": "st.nme.original.txt" }
-			},
-			"endCaptures": {
-				"0" : { "name": "st.nme.translated.txt" }
-			}
-		},
-		"slash.infer.txt": {
-			"begin": "^(//)([^\n]*?[<>\u3000-\u303F\uFF1F\uFF01\uFF1A\uFF1B\u2026\u2014\uFF0C].*\n)",
-			"end" : "^.*$",
-			"beginCaptures": {
-				"0" : { "name": "st.original.tag" },
-				"2" : { "name": "original.txt" }
-			},
-			"endCaptures": {
-				"0" : { "name": "translated.txt" }
-			}
-		},
+		
+		
 		"st.nme.original": {
 			"match": "(★nme\\d+★)(.*)",
 			"captures": {
@@ -132,28 +85,50 @@
 			"end": "%>",
 			"endCaptures": {"0": {"name": "end"}}
 		},
+		"slash.infer.nme": {
+			"begin": "^(//)(([^<>\n\u3000-\u303F\uFF1F\uFF01\uFF1A\uFF1B\u2026\u2014\uFF0C]{0,8}|@.*)\n)",
+			"end" : "^.*$",
+			"beginCaptures": {
+				"0" : { "name": "st.nme.original.tag" },
+				"2" : { "name": "st.nme.original.txt" }
+			},
+			"endCaptures": {
+				"0" : { "name": "st.nme.translated.txt" }
+			}
+		},
+		"slash.infer.txt": {
+			"begin": "^(//)(.*\n)",
+			"end" : "^.*$",
+			"beginCaptures": {
+				"0" : { "name": "st.original.tag" },
+				"2" : { "name": "original.txt" }
+			},
+			"endCaptures": {
+				"0" : { "name": "translated.txt" }
+			}
+		},
 		"infer.nme": {
 			"begin": "^((★|○)\\d+(★|○)|\\[0x[0-9a-f]+\\]|<[a-zA-Z0-9]*>//)(([^\u3000-\u303F\uFF1F\uFF01\uFF1A\uFF1B\u2026\u2014\uFF0C]{0,8})|@.*)\n",
-			"end" : "((☆|●)\\d+(☆|●)|;\\[0x[0-9a-f]+\\]|<[a-zA-Z0-9]*>(?!//))(.*)$",
+			"end" : "((☆|●)\\d+(☆|●)|;\\[0x[0-9a-f]+\\]|<[a-zA-Z0-9]*>(//)?)(.*)$",
 			"beginCaptures": {
 				"0" : { "name": "st.nme.original.tag" },
 				"4" : { "name": "st.nme.original.txt" }
 			},
 			"endCaptures": {
 				"0" : { "name": "st.nme.translated.tag" },
-				"4" : { "name": "st.nme.translated.txt" }
+				"5" : { "name": "st.nme.translated.txt" }
 			}
 		},
 		"infer.txt": {
 			"begin": "^((★|○)\\d+(★|○)|\\[0x[0-9a-f]+\\]|<[a-zA-Z0-9]*>//)(.*)",
-			"end" : "((☆|●)\\d+(☆|●)|;\\[0x[0-9a-f]+\\]|<[a-zA-Z0-9]*>(?!//))(.*)$",
+			"end" : "((☆|●)\\d+(☆|●)|;\\[0x[0-9a-f]+\\]|<[a-zA-Z0-9]*>(//)?)(.*)$",
 			"beginCaptures": {
 				"0" : { "name": "st.original.tag" },
 				"4" : { "name": "original.txt" }
 			},
 			"endCaptures": {
 				"0" : { "name": "st.translated.tag" },
-				"4" : { "name": "translated.txt" }
+				"5" : { "name": "translated.txt" }
 			}
 		},
 		"st.ctl.original": {
