@@ -12,18 +12,143 @@ var testreg = /(\/\/[^\n]*\n).*/m;
 var testreg = /(<=?<\d>).*/g;
 //？！：；…—
 //https://blog.csdn.net/yuan892173701/article/details/8731490
+//https://gist.github.com/ryanmcgrath/982242
 /((☆|●)[a-z0-9]+(☆|●))(?=[^\u3000-\u303F\uFF1F\uFF01\uFF1A\uFF1B\u2026\u2014\uFF0C]*\n)/g;
 /((☆|●)[a-z0-9]+(☆|●))(?![^\u3000-\u303F\uFF1F\uFF01\uFF1A\uFF1B\u2026\u2014\uFF0C]*\n)/g;
 
 let BASE_URL = "https://jsccsj.com/"
 
+interface DictItem {
+	game: string;
+	raw: string;
+	translate: string;
+}
+
 // this method is called when your extension is activated
 export function activate(context: vscode.ExtensionContext) {
+  console.log('decorator sample is activated');
+
+	let timeout: NodeJS.Timer | undefined = undefined;
+
+	// create a decorator type that we use to decorate small numbers
+	const smallNumberDecorationType = vscode.window.createTextEditorDecorationType({
+		borderWidth: '1px',
+		borderStyle: 'solid',
+		overviewRulerColor: 'blue',
+		overviewRulerLane: vscode.OverviewRulerLane.Right,
+		light: {
+			// this color will be used in light color themes
+			borderColor: 'darkblue'
+		},
+		dark: {
+			// this color will be used in dark color themes
+			borderColor: 'lightblue'
+		}
+	});
+
+	// create a decorator type that we use to decorate large numbers
+	const largeNumberDecorationType = vscode.window.createTextEditorDecorationType({
+		cursor: 'crosshair',
+		// use a themable color. See package.json for the declaration and default values.
+		backgroundColor: { id: 'myextension.largeNumberBackground' }
+	});
+
+	let activeEditor = vscode.window.activeTextEditor;
+
+	function updateDecorations() {
+		console.log('hhh');
+		const game : string | undefined = context.workspaceState.get('game');
+		if (!activeEditor || !game) {
+			return;
+		}
+		const keywords = context.workspaceState.get(`${game}.dict`) as Array<any>;
+		const testArray: Array<String> = [];
+		for (let i = 0; i < keywords.length; i++) {
+			let v = keywords[i];
+			let vr = v['raw:'];
+			testArray.push(vr);
+		}
+		const regStr = testArray.join('|')
+		const regEx = new RegExp(regStr, "g");
+		let dict = new Map<String, string>();
+		keywords.forEach(v => {
+			dict.set(v['raw:'], v['translate:']);
+		});
+		const text = activeEditor.document.getText();
+		const keywordsDecos: vscode.DecorationOptions[] = [];
+		let match;
+		while ((match = regEx.exec(text))) {
+			const startPos = activeEditor.document.positionAt(match.index);
+			const endPos = activeEditor.document.positionAt(match.index + match[0].length);
+			const decoration = {
+				range: new vscode.Range(startPos, endPos),
+				hoverMessage: dict.get(match[0]),
+				renderOptions: {
+					// after: {
+					// 	contentText: ""
+					// }
+				}
+			};
+			keywordsDecos.push(decoration);
+		}
+		activeEditor.setDecorations(largeNumberDecorationType, keywordsDecos);
+	}
+
+	function triggerUpdateDecorations() {
+		if (timeout) {
+			clearTimeout(timeout);
+			timeout = undefined;
+		}
+		timeout = setTimeout(updateDecorations, 500);
+	}
+
+	setInterval(() => {
+		if (vscode.window.activeTextEditor && context.workspaceState.get('game')) {
+			vscode.commands.executeCommand('Extension.dltxt.sync_database');
+		}
+	}, 1000);
+
+	if (activeEditor) {
+		triggerUpdateDecorations();
+	}
+
+	
+
+	vscode.window.onDidChangeActiveTextEditor(editor => {
+		activeEditor = editor;
+		if (editor) {
+			triggerUpdateDecorations();
+		}
+	}, null, context.subscriptions);
+
+	vscode.workspace.onDidChangeTextDocument(event => {
+		if (activeEditor && event.document === activeEditor.document) {
+			triggerUpdateDecorations();
+		}
+	}, null, context.subscriptions);
+
 	const config = vscode.workspace.getConfiguration("dltxt");
 	const translatedPrefixRegex = config.get('translatedTextPrefixRegex');
+
+	let syncDatabaseCommand = vscode.commands.registerCommand('Extension.dltxt.sync_database', function () {
+		let GameTitle: string = context.workspaceState.get("game") as string;
+		if (!GameTitle) {
+			vscode.commands.executeCommand('Extension.dltxt.setGame');
+			GameTitle = context.workspaceState.get("game") as string;
+		}
+		if (GameTitle) {
+			let fullURL = BASE_URL + "api/querybygame/" + GameTitle;
+			axios.get(fullURL).then(result => {
+				console.log(result);
+				if (result) {
+					context.workspaceState.update(`${GameTitle}.dict`, result.data);
+				}
+			});
+		}
+	});
 	
 	let newContextMenu_Insert = vscode.commands.registerCommand('Extension.dltxt.context_menu_insert', function () {
-		let GameTitle: string = context.workspaceState.get("game") as string
+		let GameTitle: string = context.workspaceState.get("game") as string;
 		vscode.window.showInputBox({ placeHolder: '(' + GameTitle + ')输入翻译文本' })
 			.then((translate: string | undefined) => {
 				let editor = vscode.window.activeTextEditor;
@@ -181,6 +306,8 @@ export function activate(context: vscode.ExtensionContext) {
 		nextLine,
 		prevLine
 	);
+	vscode.commands.executeCommand('Extension.dltxt.sync_database');
+
 }
 
 // this method is called when your extension is deactivated
@@ -195,11 +322,15 @@ TODO:
 1. syntax highlight for more format [DONE]
 2. let user configure format [DONE]
 3. hotkey for all format [DONE]
-4. highlight for name
+4. highlight for name [DONE]
 -- v1.0
-1. highlight keywords (decoration)
-2. codelens for each keyword
+1. highlight keywords [-]
+	- highlight and hover [DONE]
+	- configutable interval time
+	- local mode / sync mode
 -- v1.1
+2. codelens for each keyword
+-- v1.2
 1. auto preprocess based on database
 	- update database on load
 	- command to preprocess

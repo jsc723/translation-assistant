@@ -4,7 +4,7 @@
 	"publisher": "jsc723",
 	"icon": "assets/logo.png",
 	"description": "",
-	"version": "0.2.4",
+	"version": "0.9.0",
 	"engines": {
 		"vscode": "^1.47.0"
 	},
@@ -44,7 +44,22 @@
 				"path": "themes/dltxt_dark.json"
 			}
 		],
+		"colors": [
+			{
+				"id": "myextension.largeNumberBackground",
+				"description": "Background decoration color for large numbers",
+				"defaults": {
+					"dark": "#FF000055",
+					"light": "#FF000055",
+					"highContrast": "#FF000055"
+				}
+			}
+		],
 		"commands": [
+			{
+				"command": "Extension.dltxt.sync_database",
+				"title": "DLTXT: Sync Database"
+			},
 			{
 				"command": "Extension.dltxt.context_menu_insert",
 				"title": "DLTXT: translation"
