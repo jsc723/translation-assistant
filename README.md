@@ -40,6 +40,8 @@ NULL
 - hotkey to nagivate 
   - `Alt + Enter` go to next line to edit
   - `Alt + \` go to previous line to edit
+- use context menu to define/update keyword, which is automatically synced for each game
+- use `set game` command to set the game title that you are currently working on
 
 ## Tips
 
@@ -59,6 +61,9 @@ NULL
 ## Known Issues
 
 ## Release Notes
+
+### 0.9
+- keyword defining/highlighting/syncing (beta)
 
 ### 0.2
 - syntax highlights for common formats
