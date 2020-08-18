@@ -56,7 +56,6 @@ export function activate(context: vscode.ExtensionContext) {
 	function updateDecorations() {
 		if (!config.get('showKeywordHighlight'))
 			return;
-		console.log('hhh');
 		const game : string | undefined = context.workspaceState.get('game');
 		if (!activeEditor || !game) {
 			return;
@@ -209,11 +208,13 @@ export function activate(context: vscode.ExtensionContext) {
 	});
 	let setCursorAndScroll = (editor: vscode.TextEditor, dn: number, m: number) => {
 		const position = editor.selection.active;
-		const newPosition = position.with(position.line + dn, m);
+		const targetLine = position.line + dn;
+		const newPosition = position.with(targetLine, m);
 		editor.selection = new vscode.Selection(newPosition, newPosition);
 		const curRange = editor.visibleRanges[0];
-		const pStart = curRange.start.with(Math.max(0, curRange.start.line + dn));
-		const pEnd = curRange.start.with(Math.max(0, curRange.end.line + dn));
+		const halfHeight = Math.floor((curRange.end.line - curRange.start.line))/2;
+		const pStart = curRange.start.with(Math.max(0, targetLine - halfHeight));
+		const pEnd = curRange.start.with(Math.max(0, targetLine + halfHeight));
 		editor.revealRange(curRange.with(pStart, pEnd));
 	};
 	let countCharBeforeNewline = function(text: string, startIdx: number) : number{
@@ -329,10 +330,15 @@ TODO:
 -- v1.0
 1. highlight keywords [-]
 	- highlight and hover [DONE]
-	- configutable interval time
-	- local mode / sync mode
+	- configutable interval time 
+	- local mode / sync mode 
+2. backend: login
+3. Chinese Readme
+4. auto scroll to middle on hotkey
 -- v1.1
-2. codelens for each keyword
+1. codelens for each keyword
+2. backend: permission
+
 -- v1.2
 1. auto preprocess based on database
 	- update database on load
