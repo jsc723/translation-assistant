@@ -2,8 +2,6 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 import axios from 'axios';
-import { send } from 'process';
-import { start } from 'repl';
 
 /*
 (;\\[[a-z0-9]+\\])|((☆|●)[a-z0-9]+(☆|●))|(<\\d+>(?!//))|(//.*\n)
@@ -26,7 +24,7 @@ interface DictItem {
 
 // this method is called when your extension is activated
 export function activate(context: vscode.ExtensionContext) {
-  console.log('decorator sample is activated');
+  const config = vscode.workspace.getConfiguration("dltxt");
 
 	let timeout: NodeJS.Timer | undefined = undefined;
 
@@ -56,6 +54,8 @@ export function activate(context: vscode.ExtensionContext) {
 	let activeEditor = vscode.window.activeTextEditor;
 
 	function updateDecorations() {
+		if (!config.get('showKeywordHighlight'))
+			return;
 		console.log('hhh');
 		const game : string | undefined = context.workspaceState.get('game');
 		if (!activeEditor || !game) {
@@ -102,17 +102,18 @@ export function activate(context: vscode.ExtensionContext) {
 		timeout = setTimeout(updateDecorations, 500);
 	}
 
-	setInterval(() => {
-		if (vscode.window.activeTextEditor && context.workspaceState.get('game')) {
-			vscode.commands.executeCommand('Extension.dltxt.sync_database');
-		}
-	}, 1000);
+	if (config.get('remoteSync')) {
+		setInterval(() => {
+			if (vscode.window.activeTextEditor && context.workspaceState.get('game')) {
+				vscode.commands.executeCommand('Extension.dltxt.sync_database');
+			}
+		}, 1000);
+	}
 
 	if (activeEditor) {
 		triggerUpdateDecorations();
 	}
 
-	
 
 	vscode.window.onDidChangeActiveTextEditor(editor => {
 		activeEditor = editor;
@@ -127,7 +128,7 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 	}, null, context.subscriptions);
 
-	const config = vscode.workspace.getConfiguration("dltxt");
+	
 	const translatedPrefixRegex = config.get('translatedTextPrefixRegex');
 
 	let syncDatabaseCommand = vscode.commands.registerCommand('Extension.dltxt.sync_database', function () {
