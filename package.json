@@ -4,7 +4,7 @@
 	"publisher": "jsc723",
 	"icon": "assets/logo.png",
 	"description": "",
-	"version": "0.9.4",
+	"version": "0.9.5",
 	"engines": {
 		"vscode": "^1.47.0"
 	},
@@ -89,6 +89,14 @@
 			{
 				"command": "Extension.dltxt.prev",
 				"key": "alt+\\"
+			},
+			{
+				"command": "Extension.dltxt.next",
+				"key": "ctrl+enter"
+			},
+			{
+				"command": "Extension.dltxt.prev",
+				"key": "ctrl+\\"
 			}
 		],
 		"menus": {
@@ -118,7 +126,7 @@
 				},
 				"dltxt.remoteSync": {
 					"type": "boolean",
-					"default": true,
+					"default": false,
 					"description": "Sync with remote server or not (reload required)"
 				},
 				"dltxt.showKeywordHighlight": {

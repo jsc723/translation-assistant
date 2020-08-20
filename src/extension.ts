@@ -100,8 +100,8 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 		timeout = setTimeout(updateDecorations, 500);
 	}
-
-	if (config.get('remoteSync')) {
+	const remoteSync: boolean = config.get('remoteSync') as boolean;
+	if (remoteSync) {
 		setInterval(() => {
 			if (vscode.window.activeTextEditor && context.workspaceState.get('game')) {
 				vscode.commands.executeCommand('Extension.dltxt.sync_database');
@@ -132,6 +132,10 @@ export function activate(context: vscode.ExtensionContext) {
 
 	let syncDatabaseCommand = vscode.commands.registerCommand('Extension.dltxt.sync_database', function () {
 		let GameTitle: string = context.workspaceState.get("game") as string;
+		if (!remoteSync) {
+			vscode.window.showErrorMessage('Please turn on remoteSync option before sync with database.')
+			return;
+		}
 		if (!GameTitle) {
 			vscode.commands.executeCommand('Extension.dltxt.setGame');
 			GameTitle = context.workspaceState.get("game") as string;
@@ -156,20 +160,26 @@ export function activate(context: vscode.ExtensionContext) {
 				if (editor && !editor.selection.isEmpty) {
 					const raw_text = editor.document.getText(editor.selection);
 					var msg = raw_text + "->" + translate;
-					const API_Query: string = BASE_URL + "api/insert";
-					let fullURL = API_Query + "/" + raw_text + "/" + translate + "/" + GameTitle;
-					fullURL = encodeURI(fullURL);
-					axios.get(fullURL)
-						.then(response => {
-							if (response.data.Result === 'True') {
-								vscode.window.showInformationMessage("Insert Success!\n" + msg);
-							}
-							else
-								vscode.window.showInformationMessage("unexpected json returned:\n" + response.data.Message);
-						})
-						.catch(error => {
-							vscode.window.showInformationMessage("unexpected error:\n" + error);
-						})
+					if (remoteSync) {
+						const API_Query: string = BASE_URL + "api/insert";
+						let fullURL = API_Query + "/" + raw_text + "/" + translate + "/" + GameTitle;
+						fullURL = encodeURI(fullURL);
+						axios.get(fullURL)
+							.then(response => {
+								if (response.data.Result === 'True') {
+									vscode.window.showInformationMessage("Insert Success!\n" + msg);
+								}
+								else
+									vscode.window.showInformationMessage("unexpected json returned:\n" + response.data.Message);
+							})
+							.catch(error => {
+								vscode.window.showInformationMessage("unexpected error:\n" + error);
+							});
+					} 
+					else {
+						//TODO: local mode
+						vscode.window.showErrorMessage("local mode not supported yet");
+					}
 				}
 			})
 	});
@@ -181,19 +191,25 @@ export function activate(context: vscode.ExtensionContext) {
 				if (editor && !editor.selection.isEmpty) {
 					const raw_text = editor.document.getText(editor.selection);
 					var msg = raw_text + "->" + translate;
-					const API_Query: string =  BASE_URL + "api/update";
-					let fullURL = API_Query + "/" + raw_text + "/" + translate + "/" + GameTitle;
-					fullURL = encodeURI(fullURL);
-					axios.get(fullURL)
-						.then(response => {
-							if (response.data.Result === 'True')
-								vscode.window.showInformationMessage("Update Success!\n" + msg);
-							else
-								vscode.window.showInformationMessage("unexpected json returned:\n" + response.data.Message);
-						})
-						.catch(error => {
-							vscode.window.showInformationMessage("unexpected error:\n" + error);
-						})
+					if (remoteSync) {
+						const API_Query: string = BASE_URL + "api/update";
+						let fullURL = API_Query + "/" + raw_text + "/" + translate + "/" + GameTitle;
+						fullURL = encodeURI(fullURL);
+						axios.get(fullURL)
+							.then(response => {
+								if (response.data.Result === 'True')
+									vscode.window.showInformationMessage("Update Success!\n" + msg);
+								else
+									vscode.window.showInformationMessage("unexpected json returned:\n" + response.data.Message);
+							})
+							.catch(error => {
+								vscode.window.showInformationMessage("unexpected error:\n" + error);
+							});
+					} 
+					else {
+						//TODO: local mode
+						vscode.window.showErrorMessage("local mode not supported yet");
+					}
 				}
 			})
 	});
@@ -328,16 +344,24 @@ TODO:
 3. hotkey for all format [DONE]
 4. highlight for name [DONE]
 -- v1.0
-1. highlight keywords [-]
+1. highlight keywords [DONE]
 	- highlight and hover [DONE]
-	- configutable interval time 
-	- local mode / sync mode 
-2. backend: login
-3. Chinese Readme
-4. auto scroll to middle on hotkey
+	- switch highlight off [DONE]
+2. backend
+	- login 
+	- delete
+	- database:
+		user table (*id, name, password_hash),
+		game table (*game id, %owner id, game title), 
+		term table (*game id, *term id, raw, translate) 
+		permission (*user id, *game id, permission level (read, write, admin))
+3. Chinese Readme [DONE]
+4. auto scroll to middle on hotkey [DONE]
+5. local mode / sync mode 
 -- v1.1
 1. codelens for each keyword
 2. backend: permission
+3. - configutable interval time 
 
 -- v1.2
 1. auto preprocess based on database
