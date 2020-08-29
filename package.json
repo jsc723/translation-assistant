@@ -4,7 +4,7 @@
 	"publisher": "jsc723",
 	"icon": "assets/logo.png",
 	"description": "",
-	"version": "0.9.5",
+	"version": "1.0.0",
 	"engines": {
 		"vscode": "^1.47.0"
 	},
@@ -114,6 +114,19 @@
 		"configuration": {
       "title": "dltxt",
       "properties": {
+				"dltxt.remoteHost": {
+					"type": "string",
+					"default": "https://jsccsj.com",
+					"description": "url of the remote host"
+				},
+				"dltxt.username": {
+					"type": "string",
+					"description": "Username of the remote service host"
+				},
+				"dltxt.apiToken": {
+					"type": "string",
+					"description": "APIToken that can be found on your homepage of the remote host"
+				},
         "dltxt.originalTextPrefixRegex": {
           "type": "string",
           "default": "(\\[[a-z0-9]+\\])|((★|○)[a-z0-9]+(★|○))|((<\\d+>)?//))",
@@ -124,15 +137,10 @@
           "default": "(;\\[[a-z0-9]+\\])|((☆|●)[a-z0-9]+(☆|●))|(<\\d+>(?!//))|((//[^\n]*\n)(?!<\\d+>))",
           "description": "Translated Text Prefix"
 				},
-				"dltxt.remoteSync": {
-					"type": "boolean",
-					"default": false,
-					"description": "Sync with remote server or not (reload required)"
-				},
 				"dltxt.showKeywordHighlight": {
 					"type": "boolean",
 					"default": true,
-					"description": "Show highlight or not (reload required)"
+					"description": "Show highlight or not"
 				}
       }
     }

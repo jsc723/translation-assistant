@@ -6,25 +6,13 @@ import axios from 'axios';
 /*
 (;\\[[a-z0-9]+\\])|((☆|●)[a-z0-9]+(☆|●))|(<\\d+>(?!//))|(//.*\n)
 */
-var testreg = /(\/\/[^\n]*\n).*/m;
-var testreg = /(<=?<\d>).*/g;
+
 //？！：；…—
 //https://blog.csdn.net/yuan892173701/article/details/8731490
 //https://gist.github.com/ryanmcgrath/982242
-/((☆|●)[a-z0-9]+(☆|●))(?=[^\u3000-\u303F\uFF1F\uFF01\uFF1A\uFF1B\u2026\u2014\uFF0C]*\n)/g;
-/((☆|●)[a-z0-9]+(☆|●))(?![^\u3000-\u303F\uFF1F\uFF01\uFF1A\uFF1B\u2026\u2014\uFF0C]*\n)/g;
-
-let BASE_URL = "https://jsccsj.com/"
-
-interface DictItem {
-	game: string;
-	raw: string;
-	translate: string;
-}
-
 // this method is called when your extension is activated
 export function activate(context: vscode.ExtensionContext) {
-  const config = vscode.workspace.getConfiguration("dltxt");
+	
 
 	let timeout: NodeJS.Timer | undefined = undefined;
 
@@ -54,6 +42,7 @@ export function activate(context: vscode.ExtensionContext) {
 	let activeEditor = vscode.window.activeTextEditor;
 
 	function updateDecorations() {
+		const config = vscode.workspace.getConfiguration("dltxt");
 		if (!config.get('showKeywordHighlight'))
 			return;
 		const game : string | undefined = context.workspaceState.get('game');
@@ -64,14 +53,14 @@ export function activate(context: vscode.ExtensionContext) {
 		const testArray: Array<String> = [];
 		for (let i = 0; i < keywords.length; i++) {
 			let v = keywords[i];
-			let vr = v['raw:'];
+			let vr = v['raw'];
 			testArray.push(vr);
 		}
 		const regStr = testArray.join('|')
 		const regEx = new RegExp(regStr, "g");
 		let dict = new Map<String, string>();
 		keywords.forEach(v => {
-			dict.set(v['raw:'], v['translate:']);
+			dict.set(v['raw'], v['translate']);
 		});
 		const text = activeEditor.document.getText();
 		const keywordsDecos: vscode.DecorationOptions[] = [];
@@ -100,19 +89,15 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 		timeout = setTimeout(updateDecorations, 500);
 	}
-	const remoteSync: boolean = config.get('remoteSync') as boolean;
-	if (remoteSync) {
-		setInterval(() => {
-			if (vscode.window.activeTextEditor && context.workspaceState.get('game')) {
-				vscode.commands.executeCommand('Extension.dltxt.sync_database');
-			}
-		}, 1000);
-	}
+	setInterval(() => {
+		if (vscode.window.activeTextEditor && context.workspaceState.get('game')) {
+			vscode.commands.executeCommand('Extension.dltxt.sync_database');
+		}
+	}, 1000);
 
 	if (activeEditor) {
 		triggerUpdateDecorations();
 	}
-
 
 	vscode.window.onDidChangeActiveTextEditor(editor => {
 		activeEditor = editor;
@@ -127,22 +112,29 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 	}, null, context.subscriptions);
 
-	
+	const config = vscode.workspace.getConfiguration("dltxt");
 	const translatedPrefixRegex = config.get('translatedTextPrefixRegex');
 
 	let syncDatabaseCommand = vscode.commands.registerCommand('Extension.dltxt.sync_database', function () {
-		let GameTitle: string = context.workspaceState.get("game") as string;
-		if (!remoteSync) {
-			vscode.window.showErrorMessage('Please turn on remoteSync option before sync with database.')
+		//const config = vscode.workspace.getConfiguration("dltxt");
+		const username: string = config.get("username") as string;
+		const apiToken: string = config.get("apiToken") as string;
+		if (!username || !apiToken) {
 			return;
 		}
+		const BASE_URL = config.get('remoteHost');
+		let GameTitle: string = context.workspaceState.get("game") as string;
 		if (!GameTitle) {
 			vscode.commands.executeCommand('Extension.dltxt.setGame');
 			GameTitle = context.workspaceState.get("game") as string;
 		}
 		if (GameTitle) {
-			let fullURL = BASE_URL + "api/querybygame/" + GameTitle;
-			axios.get(fullURL).then(result => {
+			let fullURL = BASE_URL + "/api/querybygame/" + GameTitle;
+			axios.get(fullURL, {
+				auth: {
+					username: username, password: apiToken
+				}
+			}).then(result => {
 				console.log(result);
 				if (result) {
 					context.workspaceState.update(`${GameTitle}.dict`, result.data);
@@ -153,6 +145,14 @@ export function activate(context: vscode.ExtensionContext) {
 	});
 	
 	let newContextMenu_Insert = vscode.commands.registerCommand('Extension.dltxt.context_menu_insert', function () {
+		//const config = vscode.workspace.getConfiguration("dltxt");
+		const username: string = config.get("username") as string;
+		const apiToken: string = config.get("apiToken") as string;
+		if (!username || !apiToken) {
+			vscode.window.showErrorMessage("请在设置中填写账号与API Token后再使用同步功能");
+			return;
+		}
+		const BASE_URL = config.get('remoteHost');
 		let GameTitle: string = context.workspaceState.get("game") as string;
 		vscode.window.showInputBox({ placeHolder: '(' + GameTitle + ')输入翻译文本' })
 			.then((translate: string | undefined) => {
@@ -160,56 +160,58 @@ export function activate(context: vscode.ExtensionContext) {
 				if (editor && !editor.selection.isEmpty) {
 					const raw_text = editor.document.getText(editor.selection);
 					var msg = raw_text + "->" + translate;
-					if (remoteSync) {
-						const API_Query: string = BASE_URL + "api/insert";
-						let fullURL = API_Query + "/" + raw_text + "/" + translate + "/" + GameTitle;
-						fullURL = encodeURI(fullURL);
-						axios.get(fullURL)
-							.then(response => {
-								if (response.data.Result === 'True') {
-									vscode.window.showInformationMessage("Insert Success!\n" + msg);
-								}
-								else
-									vscode.window.showInformationMessage("unexpected json returned:\n" + response.data.Message);
-							})
-							.catch(error => {
-								vscode.window.showInformationMessage("unexpected error:\n" + error);
-							});
+					const API_Query: string = BASE_URL + "/api/insert";
+					let fullURL = API_Query + "/" + GameTitle + "/" + raw_text + "/" + translate;
+					fullURL = encodeURI(fullURL);
+					axios.get(fullURL, {
+						auth: {
+							username: username, password: apiToken
+						}
+					}).then(response => {
+							if (response.data.Result === 'True') {
+								vscode.window.showInformationMessage("Insert Success!\n" + msg);
+							}
+							else
+								vscode.window.showInformationMessage("unexpected json returned:\n" + response.data.Message);
+						})
+						.catch(error => {
+							vscode.window.showInformationMessage("unexpected error:\n" + error);
+						});
 					} 
-					else {
-						//TODO: local mode
-						vscode.window.showErrorMessage("local mode not supported yet");
-					}
-				}
 			})
 	});
 	let newContextMenu_Update = vscode.commands.registerCommand('Extension.dltxt.context_menu_update',　function () {
-		let GameTitle: string = context.workspaceState.get("game") as string
+		//const config = vscode.workspace.getConfiguration("dltxt");
+		const username: string = config.get("username") as string;
+		const apiToken: string = config.get("apiToken") as string;
+		if (!username || !apiToken) {
+			vscode.window.showErrorMessage("请在设置中填写账号与API Token后再使用同步功能");
+			return;
+		}
+		const BASE_URL = config.get('remoteHost');
+		let GameTitle: string = context.workspaceState.get("game") as string;
 		vscode.window.showInputBox({ placeHolder: '(' + GameTitle + ')输入翻译文本' })
 			.then((translate: string | undefined) => {
 				let editor = vscode.window.activeTextEditor;
 				if (editor && !editor.selection.isEmpty) {
 					const raw_text = editor.document.getText(editor.selection);
 					var msg = raw_text + "->" + translate;
-					if (remoteSync) {
-						const API_Query: string = BASE_URL + "api/update";
-						let fullURL = API_Query + "/" + raw_text + "/" + translate + "/" + GameTitle;
-						fullURL = encodeURI(fullURL);
-						axios.get(fullURL)
-							.then(response => {
-								if (response.data.Result === 'True')
-									vscode.window.showInformationMessage("Update Success!\n" + msg);
-								else
-									vscode.window.showInformationMessage("unexpected json returned:\n" + response.data.Message);
-							})
-							.catch(error => {
-								vscode.window.showInformationMessage("unexpected error:\n" + error);
-							});
-					} 
-					else {
-						//TODO: local mode
-						vscode.window.showErrorMessage("local mode not supported yet");
-					}
+					const API_Query: string = BASE_URL + "/api/update";
+					let fullURL = API_Query + "/" + raw_text + "/" + translate + "/" + GameTitle;
+					fullURL = encodeURI(fullURL);
+					axios.get(fullURL, {
+						auth: {
+							username: username, password: apiToken
+						}
+					}).then(response => {
+							if (response.data.Result === 'True')
+								vscode.window.showInformationMessage("Update Success!\n" + msg);
+							else
+								vscode.window.showInformationMessage("unexpected json returned:\n" + response.data.Message);
+						})
+						.catch(error => {
+							vscode.window.showInformationMessage("unexpected error:\n" + error);
+						});
 				}
 			})
 	});
@@ -220,7 +222,7 @@ export function activate(context: vscode.ExtensionContext) {
 					value = ""
 				}
 				context.workspaceState.update("game", value);
-			})
+			});
 	});
 	let setCursorAndScroll = (editor: vscode.TextEditor, dn: number, m: number) => {
 		const position = editor.selection.active;
@@ -326,7 +328,7 @@ export function activate(context: vscode.ExtensionContext) {
 		nextLine,
 		prevLine
 	);
-	vscode.commands.executeCommand('Extension.dltxt.sync_database');
+	//vscode.commands.executeCommand('Extension.dltxt.sync_database');
 
 }
 
@@ -347,7 +349,7 @@ TODO:
 1. highlight keywords [DONE]
 	- highlight and hover [DONE]
 	- switch highlight off [DONE]
-2. backend
+2. backend [DONE]
 	- login 
 	- delete
 	- database:
@@ -358,10 +360,10 @@ TODO:
 3. Chinese Readme [DONE]
 4. auto scroll to middle on hotkey [DONE]
 5. local mode / sync mode 
+6. update request format to fit remote update
 -- v1.1
 1. codelens for each keyword
-2. backend: permission
-3. - configutable interval time 
+2. - configutable interval time 
 
 -- v1.2
 1. auto preprocess based on database
@@ -369,7 +371,6 @@ TODO:
 	- command to preprocess
 	- command to force update
 
-	"end" : "((☆|●)\\d+(☆|●)|;\\[0x[0-9a-f]+\\])(.*)",
 
 
 */
