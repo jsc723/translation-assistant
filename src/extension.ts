@@ -12,8 +12,6 @@ import axios from 'axios';
 //https://gist.github.com/ryanmcgrath/982242
 // this method is called when your extension is activated
 export function activate(context: vscode.ExtensionContext) {
-	
-
 	let timeout: NodeJS.Timer | undefined = undefined;
 
 	// create a decorator type that we use to decorate small numbers
@@ -40,9 +38,11 @@ export function activate(context: vscode.ExtensionContext) {
 	});
 
 	let activeEditor = vscode.window.activeTextEditor;
-
+	const config = vscode.workspace.getConfiguration("dltxt");
+	const translatedPrefixRegex = config.get('translatedTextPrefixRegex');
+	
 	function updateDecorations() {
-		const config = vscode.workspace.getConfiguration("dltxt");
+		//const config = vscode.workspace.getConfiguration("dltxt");
 		if (!config.get('showKeywordHighlight'))
 			return;
 		const game : string | undefined = context.workspaceState.get('game');
@@ -89,11 +89,11 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 		timeout = setTimeout(updateDecorations, 500);
 	}
-	setInterval(() => {
-		if (vscode.window.activeTextEditor && context.workspaceState.get('game')) {
-			vscode.commands.executeCommand('Extension.dltxt.sync_database');
-		}
-	}, 1000);
+	// setInterval(() => {
+	// 	if (vscode.window.activeTextEditor && context.workspaceState.get('game')) {
+	// 		vscode.commands.executeCommand('Extension.dltxt.sync_database');
+	// 	}
+	// }, 1000);
 
 	if (activeEditor) {
 		triggerUpdateDecorations();
@@ -112,8 +112,7 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 	}, null, context.subscriptions);
 
-	const config = vscode.workspace.getConfiguration("dltxt");
-	const translatedPrefixRegex = config.get('translatedTextPrefixRegex');
+	
 
 	let syncDatabaseCommand = vscode.commands.registerCommand('Extension.dltxt.sync_database', function () {
 		//const config = vscode.workspace.getConfiguration("dltxt");
