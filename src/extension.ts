@@ -6,7 +6,6 @@ import axios from 'axios';
 /*
 (;\\[[a-z0-9]+\\])|((☆|●)[a-z0-9]+(☆|●))|(<\\d+>(?!//))|(//.*\n)
 */
-
 //？！：；…—
 //https://blog.csdn.net/yuan892173701/article/details/8731490
 //https://gist.github.com/ryanmcgrath/982242
@@ -38,11 +37,11 @@ export function activate(context: vscode.ExtensionContext) {
 	});
 
 	let activeEditor = vscode.window.activeTextEditor;
-	const config = vscode.workspace.getConfiguration("dltxt");
-	const translatedPrefixRegex = config.get('translatedTextPrefixRegex');
+	const configInit = vscode.workspace.getConfiguration("dltxt");
+	const translatedPrefixRegex = configInit.get('translatedTextPrefixRegex');
 	
 	function updateDecorations() {
-		//const config = vscode.workspace.getConfiguration("dltxt");
+		const config = vscode.workspace.getConfiguration("dltxt");
 		if (!config.get('showKeywordHighlight'))
 			return;
 		const game : string | undefined = context.workspaceState.get('game');
@@ -54,9 +53,12 @@ export function activate(context: vscode.ExtensionContext) {
 		for (let i = 0; i < keywords.length; i++) {
 			let v = keywords[i];
 			let vr = v['raw'];
-			testArray.push(vr);
+			if(vr)
+				testArray.push(vr);
 		}
 		const regStr = testArray.join('|')
+		if (!regStr)
+			return
 		const regEx = new RegExp(regStr, "g");
 		let dict = new Map<String, string>();
 		keywords.forEach(v => {
@@ -65,7 +67,7 @@ export function activate(context: vscode.ExtensionContext) {
 		const text = activeEditor.document.getText();
 		const keywordsDecos: vscode.DecorationOptions[] = [];
 		let match;
-		while ((match = regEx.exec(text))) {
+		while (keywordsDecos.length < 10000 && (match = regEx.exec(text))) {
 			const startPos = activeEditor.document.positionAt(match.index);
 			const endPos = activeEditor.document.positionAt(match.index + match[0].length);
 			const decoration = {
@@ -89,11 +91,11 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 		timeout = setTimeout(updateDecorations, 500);
 	}
-	// setInterval(() => {
-	// 	if (vscode.window.activeTextEditor && context.workspaceState.get('game')) {
-	// 		vscode.commands.executeCommand('Extension.dltxt.sync_database');
-	// 	}
-	// }, 1000);
+	setInterval(() => {
+		if (vscode.window.activeTextEditor && context.workspaceState.get('game')) {
+			vscode.commands.executeCommand('Extension.dltxt.sync_database');
+		}
+	}, 1000);
 
 	if (activeEditor) {
 		triggerUpdateDecorations();
@@ -115,7 +117,7 @@ export function activate(context: vscode.ExtensionContext) {
 	
 
 	let syncDatabaseCommand = vscode.commands.registerCommand('Extension.dltxt.sync_database', function () {
-		//const config = vscode.workspace.getConfiguration("dltxt");
+		const config = vscode.workspace.getConfiguration("dltxt");
 		const username: string = config.get("username") as string;
 		const apiToken: string = config.get("apiToken") as string;
 		if (!username || !apiToken) {
@@ -144,7 +146,7 @@ export function activate(context: vscode.ExtensionContext) {
 	});
 	
 	let newContextMenu_Insert = vscode.commands.registerCommand('Extension.dltxt.context_menu_insert', function () {
-		//const config = vscode.workspace.getConfiguration("dltxt");
+		const config = vscode.workspace.getConfiguration("dltxt");
 		const username: string = config.get("username") as string;
 		const apiToken: string = config.get("apiToken") as string;
 		if (!username || !apiToken) {
@@ -180,7 +182,7 @@ export function activate(context: vscode.ExtensionContext) {
 			})
 	});
 	let newContextMenu_Update = vscode.commands.registerCommand('Extension.dltxt.context_menu_update',　function () {
-		//const config = vscode.workspace.getConfiguration("dltxt");
+		const config = vscode.workspace.getConfiguration("dltxt");
 		const username: string = config.get("username") as string;
 		const apiToken: string = config.get("apiToken") as string;
 		if (!username || !apiToken) {
@@ -196,7 +198,7 @@ export function activate(context: vscode.ExtensionContext) {
 					const raw_text = editor.document.getText(editor.selection);
 					var msg = raw_text + "->" + translate;
 					const API_Query: string = BASE_URL + "/api/update";
-					let fullURL = API_Query + "/" + raw_text + "/" + translate + "/" + GameTitle;
+					let fullURL = API_Query + "/" + GameTitle + "/" + raw_text + "/" + translate;
 					fullURL = encodeURI(fullURL);
 					axios.get(fullURL, {
 						auth: {
@@ -327,7 +329,7 @@ export function activate(context: vscode.ExtensionContext) {
 		nextLine,
 		prevLine
 	);
-	//vscode.commands.executeCommand('Extension.dltxt.sync_database');
+	vscode.commands.executeCommand('Extension.dltxt.sync_database');
 
 }
 

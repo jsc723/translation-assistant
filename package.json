@@ -4,7 +4,7 @@
 	"publisher": "jsc723",
 	"icon": "assets/logo.png",
 	"description": "",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"engines": {
 		"vscode": "^1.47.0"
 	},
@@ -58,27 +58,27 @@
 		"commands": [
 			{
 				"command": "Extension.dltxt.sync_database",
-				"title": "DLTXT: Sync Database"
+				"title": "DLTXT: 拉取云端数据"
 			},
 			{
 				"command": "Extension.dltxt.context_menu_insert",
-				"title": "DLTXT: translation"
+				"title": "DLTXT: 添加词条"
 			},
 			{
 				"command": "Extension.dltxt.context_menu_update",
-				"title": "DLTXT: overwrite existing translation"
+				"title": "DLTXT: 更新词条"
 			},
 			{
 				"command": "Extension.dltxt.setGame",
-				"title": "DLTXT: Set Game"
+				"title": "DLTXT: 输入当前项目名称"
 			},
 			{
 				"command": "Extension.dltxt.next",
-				"title": "DLTXT: Goto Next Line"
+				"title": "DLTXT: 移动到下一行翻译"
 			},
 			{
 				"command": "Extension.dltxt.prev",
-				"title": "DLTXT: Goto Prev Line"
+				"title": "DLTXT: 移动到上一行翻译"
 			}
 		],
 		"keybindings":[
@@ -119,7 +119,7 @@
 					"default": "https://jsccsj.com",
 					"description": "url of the remote host"
 				},
-				"dltxt.username": {
+				"dltxt.userName": {
 					"type": "string",
 					"description": "Username of the remote service host"
 				},
