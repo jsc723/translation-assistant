@@ -4,7 +4,7 @@
 	"publisher": "jsc723",
 	"icon": "assets/logo.png",
 	"description": "",
-	"version": "1.0.1",
+	"version": "1.1.0",
 	"engines": {
 		"vscode": "^1.47.0"
 	},
@@ -67,6 +67,14 @@
 			{
 				"command": "Extension.dltxt.context_menu_update",
 				"title": "DLTXT: 更新词条"
+			},
+			{
+				"command": "Extension.extract_single_line",
+				"title": "DLTXT: 从双行文本中提取单行译文"
+			},
+			{
+				"command": "Extension.merge_into_double_line",
+				"title": "DLTXT: 将单行译文应用至双行文本"
 			},
 			{
 				"command": "Extension.dltxt.setGame",

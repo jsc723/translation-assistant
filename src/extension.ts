@@ -2,7 +2,9 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 import axios from 'axios';
-
+import { findLastMatchIndex, countCharBeforeNewline, countStartingUnimportantChar } from './utils'
+import * as fs from "fs"; 
+import * as path from "path";
 /*
 (;\\[[a-z0-9]+\\])|((☆|●)[a-z0-9]+(☆|●))|(<\\d+>(?!//))|(//.*\n)
 */
@@ -225,6 +227,88 @@ export function activate(context: vscode.ExtensionContext) {
 				context.workspaceState.update("game", value);
 			});
 	});
+	let extractSingleline = vscode.commands.registerCommand('Extension.extract_single_line', () => {
+		console.log('extract single line');
+		const document = vscode.window.activeTextEditor?.document;
+		if (!document) return;
+		const filePath: string = vscode.window.activeTextEditor?.document.uri.fsPath as string;
+		if (!filePath) return;
+		let prefixRegStr = translatedPrefixRegex;
+		vscode.window.showInputBox({ placeHolder: '输入译文行首的正则表达式，如不输入则默认使用设置文件中的值' })
+			.then(val => {
+				if (val) {
+					prefixRegStr = val;
+				}
+			})
+			.then(() => {
+				if (!prefixRegStr) {
+					vscode.window.showErrorMessage('请提供译文行首的正则表达式');
+					return;
+				}
+				const dirPath = path.dirname(filePath);
+				const fileName = path.basename(filePath);
+				const tempDirPath = dirPath + '\\.dltxt'
+				if (!fs.existsSync(tempDirPath)) {
+					fs.mkdirSync(tempDirPath);
+				}
+				const lines = [];
+				const prefixReg = new RegExp(`^${prefixRegStr}` as string);
+				for (let i = 0; i < document.lineCount; i++) {
+					const line = document.lineAt(i).text;
+					if(prefixReg.test(line))
+						lines.push(line);
+				}
+				const slFilePath = tempDirPath + '\\' + fileName + '.sl';
+				const refFilePath = tempDirPath + '\\' + fileName + '.ref';
+				const data = lines.join('\r\n');
+				fs.writeFileSync(slFilePath, data);
+				fs.writeFileSync(refFilePath, prefixRegStr);
+				let setting: vscode.Uri = vscode.Uri.file(slFilePath);
+				vscode.workspace.openTextDocument(setting)
+					.then((d: vscode.TextDocument) => {
+						vscode.window.showTextDocument(d, vscode.ViewColumn.Beside, false);
+					}, (err) => {
+						console.error(err);
+					});
+			})
+		
+	});
+
+
+	let mergeIntoDoubleLine = vscode.commands.registerCommand('Extension.merge_into_double_line', () => {
+		console.log('merge into double line');
+		const editor = vscode.window.activeTextEditor;
+		if (!editor) {
+			vscode.window.showErrorMessage('请先选中需要更改的双行文本');
+			return;
+		}
+		const document = vscode.window.activeTextEditor?.document;
+		if (!document) return;
+		const filePath: string = vscode.window.activeTextEditor?.document.uri.fsPath as string;
+		if (!filePath) return;
+		const dirPath = path.dirname(filePath);
+		const fileName = path.basename(filePath);
+		const tempDirPath = dirPath + '\\.dltxt'
+		const slFilePath = tempDirPath + '\\' + fileName + '.sl';
+		const refFilePath = tempDirPath + '\\' + fileName + '.ref';
+		const prefixRegStr = fs.readFileSync(refFilePath, 'utf8');
+		if (!prefixRegStr) {
+			vscode.window.showErrorMessage('译文提取时的信息被删除，请重新提取');
+			return;
+		}
+		const prefixReg = new RegExp(prefixRegStr as string);
+		const replacedLines = fs.readFileSync(slFilePath, 'utf8').split(/\r?\n/);
+		editor.edit(editBuilder => {
+			let j = 0;
+			for (let i = 0; i < document.lineCount; i++) {
+				const line = document.lineAt(i);
+				if (prefixReg.test(line.text)) {
+					editBuilder.replace(line.range, replacedLines[j++]);
+				}
+			}
+		});
+	});
+
 	let setCursorAndScroll = (editor: vscode.TextEditor, dn: number, m: number) => {
 		const position = editor.selection.active;
 		const targetLine = position.line + dn;
@@ -236,29 +320,7 @@ export function activate(context: vscode.ExtensionContext) {
 		const pEnd = curRange.start.with(Math.max(0, targetLine + halfHeight));
 		editor.revealRange(curRange.with(pStart, pEnd));
 	};
-	let countCharBeforeNewline = function(text: string, startIdx: number) : number{
-		let m = 0;
-		for (let i = startIdx - 1; i >= 0; i--) {
-			if (text[i] === '\n') {
-				break;
-			} else {
-				m++;
-			}
-		}
-		return m;
-	};
-	const dictionary = new Set();
-	dictionary.add(" ").add("\t").add("　").add("「").add("『");
-	let countStartingUnimportantChar = (txt: string, start: number) => {
-		let n = 0;
-		for (let i = start; i < txt.length; i++) {
-			if (dictionary.has(txt[i]))
-				n++;
-			else
-				break;
-		}
-		return n;
-	};
+
 	let nextLine = vscode.commands.registerCommand('Extension.dltxt.next', () => {
     const editor = vscode.window.activeTextEditor;
     if (editor && editor.selection.isEmpty) {
@@ -281,20 +343,6 @@ export function activate(context: vscode.ExtensionContext) {
 			}
     }
 	});
-
-	function findLastMatchIndex(pattern: RegExp, text: string): number {
-		let match: RegExpExecArray | null;
-		let cur = text;
-		let result = -1;
-		while ((match = pattern.exec(cur)) != null) {
-			if (result == -1)
-				result = match.index;
-			else
-				result += match.index;
-			cur = cur.slice(match.index);
-		}
-		return result;
-	}
 
 	let prevLine = vscode.commands.registerCommand('Extension.dltxt.prev', () => {
 		const editor = vscode.window.activeTextEditor;
@@ -360,8 +408,7 @@ TODO:
 		permission (*user id, *game id, permission level (read, write, admin))
 3. Chinese Readme [DONE]
 4. auto scroll to middle on hotkey [DONE]
-5. local mode / sync mode 
-6. update request format to fit remote update
+5. update request format to fit remote update [DONE]
 -- v1.1
 1. codelens for each keyword
 2. - configutable interval time 
