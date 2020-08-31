@@ -5,7 +5,7 @@ import axios from 'axios';
 import { findLastMatchIndex, countCharBeforeNewline, countStartingUnimportantChar } from './utils'
 import * as fs from "fs"; 
 import * as path from "path";
-import { formatter } from "./formatter";
+import { formatter, copyOriginalToTranslation } from "./formatter";
 /*
 (;\\[[a-z0-9]+\\])|((☆|●)[a-z0-9]+(☆|●))|(<\\d+>(?!//))|(//.*\n)
 */
@@ -228,7 +228,7 @@ export function activate(context: vscode.ExtensionContext) {
 				context.workspaceState.update("game", value);
 			});
 	});
-	let extractSingleline = vscode.commands.registerCommand('Extension.extract_single_line', () => {
+	let extractSingleline = vscode.commands.registerCommand('Extension.dltxt.extract_single_line', () => {
 		console.log('extract single line');
 		const document = vscode.window.activeTextEditor?.document;
 		if (!document) return;
@@ -276,7 +276,7 @@ export function activate(context: vscode.ExtensionContext) {
 	});
 
 
-	let mergeIntoDoubleLine = vscode.commands.registerCommand('Extension.merge_into_double_line', () => {
+	let mergeIntoDoubleLine = vscode.commands.registerCommand('Extension.dltxt.merge_into_double_line', () => {
 		console.log('merge into double line');
 		const editor = vscode.window.activeTextEditor;
 		if (!editor) {
@@ -307,6 +307,18 @@ export function activate(context: vscode.ExtensionContext) {
 					editBuilder.replace(line.range, replacedLines[j++]);
 				}
 			}
+		});
+	});
+
+	let copyOriginalCmd = vscode.commands.registerCommand('Extension.dltxt.copy_original', () => {
+		const editor = vscode.window.activeTextEditor;
+		const document = editor?.document;
+		if (!editor || !document) {
+			vscode.window.showErrorMessage('请先选中需要更改的双行文本');
+			return;
+		}
+		editor.edit(editBuilder => {
+			copyOriginalToTranslation(context, document, editBuilder);
 		});
 	});
 

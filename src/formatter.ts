@@ -24,3 +24,29 @@ export function formatter(context: vscode.ExtensionContext, document: vscode.Tex
   }
   return result;
 }
+
+export function copyOriginalToTranslation(context: vscode.ExtensionContext, document: vscode.TextDocument, editBuilder: vscode.TextEditorEdit){
+  const config = vscode.workspace.getConfiguration("dltxt");
+  const jPreStr = config.get('originalTextPrefixRegex') as string;
+  const cPreStr = config.get('translatedTextPrefixRegex') as string;
+  if (!jPreStr || !cPreStr) {
+    return;
+  }
+  const jreg = new RegExp(`^(${jPreStr})(?<white>\\s*[「『]?)(?<text>.*?)(?<suffix>[」』]?)$`);
+  const creg = new RegExp(`^(?<prefix>${cPreStr})(?<white>\\s*[「『]?)(?<text>.*?)(?<suffix>[」』]?)$`);
+  for (let i = 0; i < document.lineCount; i++) {
+    const line = document.lineAt(i);
+    const jmatch = jreg.exec(line.text);
+    if (jmatch && i + 1 < document.lineCount) {
+      const jgrps = jmatch.groups;
+      const nextLine = document.lineAt(++i);
+      const cmatch = creg.exec(nextLine.text);
+      const cgrps = cmatch?.groups;
+      if (!cgrps?.text) {
+        const replacedLine = `${cgrps?.prefix}${jgrps?.white}${jgrps?.text}${jgrps?.suffix}`;
+        editBuilder.replace(nextLine.range, replacedLine);
+      }
+    }
+  }
+  return;
+}

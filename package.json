@@ -4,7 +4,7 @@
 	"publisher": "jsc723",
 	"icon": "assets/logo.png",
 	"description": "",
-	"version": "1.2.0",
+	"version": "1.2.1",
 	"engines": {
 		"vscode": "^1.47.0"
 	},
@@ -69,11 +69,11 @@
 				"title": "DLTXT: 更新词条"
 			},
 			{
-				"command": "Extension.extract_single_line",
+				"command": "Extension.dltxt.extract_single_line",
 				"title": "DLTXT: 从双行文本中提取单行译文"
 			},
 			{
-				"command": "Extension.merge_into_double_line",
+				"command": "Extension.dltxt.merge_into_double_line",
 				"title": "DLTXT: 将单行译文应用至双行文本"
 			},
 			{
@@ -87,6 +87,10 @@
 			{
 				"command": "Extension.dltxt.prev",
 				"title": "DLTXT: 移动到上一行翻译"
+			},
+			{
+				"command": "Extension.dltxt.copy_original",
+				"title": "DLTXT: 复制原文到未翻译的译文行"
 			}
 		],
 		"keybindings":[
