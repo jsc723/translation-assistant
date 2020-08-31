@@ -5,6 +5,7 @@ import axios from 'axios';
 import { findLastMatchIndex, countCharBeforeNewline, countStartingUnimportantChar } from './utils'
 import * as fs from "fs"; 
 import * as path from "path";
+import { formatter } from "./formatter";
 /*
 (;\\[[a-z0-9]+\\])|((☆|●)[a-z0-9]+(☆|●))|(<\\d+>(?!//))|(//.*\n)
 */
@@ -291,12 +292,12 @@ export function activate(context: vscode.ExtensionContext) {
 		const tempDirPath = dirPath + '\\.dltxt'
 		const slFilePath = tempDirPath + '\\' + fileName + '.sl';
 		const refFilePath = tempDirPath + '\\' + fileName + '.ref';
-		const prefixRegStr = fs.readFileSync(refFilePath, 'utf8');
+		const prefixRegStr = fs.readFileSync(refFilePath, 'utf8') as string;
 		if (!prefixRegStr) {
 			vscode.window.showErrorMessage('译文提取时的信息被删除，请重新提取');
 			return;
 		}
-		const prefixReg = new RegExp(prefixRegStr as string);
+		const prefixReg = new RegExp(`^(${prefixRegStr})`);
 		const replacedLines = fs.readFileSync(slFilePath, 'utf8').split(/\r?\n/);
 		editor.edit(editBuilder => {
 			let j = 0;
@@ -377,6 +378,11 @@ export function activate(context: vscode.ExtensionContext) {
 		nextLine,
 		prevLine
 	);
+	vscode.languages.registerDocumentFormattingEditProvider('dltxt', {
+		provideDocumentFormattingEdits(document: vscode.TextDocument): vscode.TextEdit[] {
+			return formatter(context, document);
+		}
+	});
 	vscode.commands.executeCommand('Extension.dltxt.sync_database');
 
 }

@@ -20,6 +20,7 @@ Provides Translation support for common type double-line-txt-file-for-translatio
   - **点击一下双行文本所在的窗口**
   - `Ctrl + Shift + P`，输入`dltxt`，选择`将单行译文应用至双行文本`，完成
   - 注：上一步操作可使用`Ctrl + Z`撤销
+- 右键菜单中选择`Format document`可以在所有译文行首行末自动添加与原文同样的空格与括号
 
 ## 格式支持
 本插件支持以下任一一种常见格式：
@@ -86,6 +87,9 @@ Provides Translation support for common type double-line-txt-file-for-translatio
 本插件还在测试阶段，可能会有各种未知问题。
 
 ## Release Notes
+
+## 1.2
+- 自动添加空格、括号
 
 ## 1.1
 - 提取译文

@@ -4,7 +4,7 @@
 	"publisher": "jsc723",
 	"icon": "assets/logo.png",
 	"description": "",
-	"version": "1.1.0",
+	"version": "1.2.0",
 	"engines": {
 		"vscode": "^1.47.0"
 	},
@@ -137,7 +137,7 @@
 				},
         "dltxt.originalTextPrefixRegex": {
           "type": "string",
-          "default": "(\\[[a-z0-9]+\\])|((★|○)[a-z0-9]+(★|○))|((<\\d+>)?//))",
+          "default": "(\\[[a-z0-9]+\\])|((★|○)[a-z0-9]+(★|○))|((<\\d+>)?//)",
           "description": "Original Text Prefix"
         },
         "dltxt.translatedTextPrefixRegex": {
