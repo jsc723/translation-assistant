@@ -4,7 +4,7 @@
 	"publisher": "jsc723",
 	"icon": "assets/logo.png",
 	"description": "",
-	"version": "1.2.1",
+	"version": "2.0.0",
 	"engines": {
 		"vscode": "^1.47.0"
 	},
@@ -126,33 +126,73 @@
 		"configuration": {
       "title": "dltxt",
       "properties": {
-				"dltxt.remoteHost": {
+				"dltxt.simpleTM.remoteHost": {
 					"type": "string",
 					"default": "https://jsccsj.com",
-					"description": "url of the remote host"
+					"description": "SimpleTM服务器网址"
 				},
-				"dltxt.userName": {
+				"dltxt.simpleTM.username": {
 					"type": "string",
-					"description": "Username of the remote service host"
+					"description": "SimpleTM用户名"
 				},
-				"dltxt.apiToken": {
+				"dltxt.simpleTM.apiToken": {
 					"type": "string",
-					"description": "APIToken that can be found on your homepage of the remote host"
+					"description": "SimpleTM APIToken （登录后可以在你的主页上找到）"
 				},
-        "dltxt.originalTextPrefixRegex": {
+        "dltxt.core.originalTextPrefixRegex": {
           "type": "string",
           "default": "(\\[[a-z0-9]+\\])|((★|○)[a-z0-9]+(★|○))|((<\\d+>)?//)",
-          "description": "Original Text Prefix"
+          "description": "描述原文开头的正则表达式"
         },
-        "dltxt.translatedTextPrefixRegex": {
+        "dltxt.core.translatedTextPrefixRegex": {
           "type": "string",
           "default": "(;\\[[a-z0-9]+\\])|((☆|●)[a-z0-9]+(☆|●))|(<\\d+>(?!//))|((//[^\n]*\n)(?!<\\d+>))",
-          "description": "Translated Text Prefix"
+          "description": "描述译文开头的正则表达式"
 				},
-				"dltxt.showKeywordHighlight": {
+				"dltxt.appearance.showKeywordHighlight": {
 					"type": "boolean",
 					"default": true,
-					"description": "Show highlight or not"
+					"description": "外观：显示关键词高亮"
+				},
+				"dltxt.formatter.a.padding": {
+					"type": "boolean",
+					"default": true,
+					"description": "格式化文本：统一缩进与对话外的单括号（「」）"
+				},
+				"dltxt.formatter.a.ellipsis": {
+					"type": "boolean",
+					"default": true,
+					"description": "格式化文本：统一省略号"
+				},
+				"dltxt.formatter.a.wave": {
+					"type": "boolean",
+					"default": true,
+					"description": "格式化文本：统一波浪号"
+				},
+				"dltxt.formatter.a.horizontalLine": {
+					"type": "boolean",
+					"default": true,
+					"description": "格式化文本：统一破折号"
+				},
+				"dltxt.formatter.b.fixReversedQuote": {
+					"type": "boolean",
+					"default": true,
+					"description": "格式化文本：统一写反的、或半角的单引号、双引号（”ａ“）"
+				},
+				"dltxt.formatter.b.h2fPunc": {
+					"type": "boolean",
+					"default": true,
+					"description": "格式化文本：将常用标点符号统一为中文全角标点（半角引号除外）"
+				},
+				"dltxt.formatter.b.h2fAlpha": {
+					"type": "boolean",
+					"default": false,
+					"description": "格式化文本：将英文与数字统一为全角（如果文本中有英文脚本请勿使用）"
+				},
+				"dltxt.formatter.c.omitPeriod": {
+					"type": "boolean",
+					"default": true,
+					"description": "格式化文本：去除对话句末的句号"
 				}
       }
     }

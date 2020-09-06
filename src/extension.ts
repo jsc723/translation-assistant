@@ -41,11 +41,11 @@ export function activate(context: vscode.ExtensionContext) {
 
 	let activeEditor = vscode.window.activeTextEditor;
 	const configInit = vscode.workspace.getConfiguration("dltxt");
-	const translatedPrefixRegex = configInit.get('translatedTextPrefixRegex');
+	const translatedPrefixRegex = configInit.get('core.translatedTextPrefixRegex');
 	
 	function updateDecorations() {
 		const config = vscode.workspace.getConfiguration("dltxt");
-		if (!config.get('showKeywordHighlight'))
+		if (!config.get('appearance.showKeywordHighlight'))
 			return;
 		const game : string | undefined = context.workspaceState.get('game');
 		if (!activeEditor || !game) {
@@ -121,12 +121,12 @@ export function activate(context: vscode.ExtensionContext) {
 
 	let syncDatabaseCommand = vscode.commands.registerCommand('Extension.dltxt.sync_database', function () {
 		const config = vscode.workspace.getConfiguration("dltxt");
-		const username: string = config.get("username") as string;
-		const apiToken: string = config.get("apiToken") as string;
+		const username: string = config.get("simpleTM.username") as string;
+		const apiToken: string = config.get("simpleTM.apiToken") as string;
 		if (!username || !apiToken) {
 			return;
 		}
-		const BASE_URL = config.get('remoteHost');
+		const BASE_URL = config.get('simpleTM.remoteHost');
 		let GameTitle: string = context.workspaceState.get("game") as string;
 		if (!GameTitle) {
 			vscode.commands.executeCommand('Extension.dltxt.setGame');
@@ -150,13 +150,13 @@ export function activate(context: vscode.ExtensionContext) {
 	
 	let newContextMenu_Insert = vscode.commands.registerCommand('Extension.dltxt.context_menu_insert', function () {
 		const config = vscode.workspace.getConfiguration("dltxt");
-		const username: string = config.get("username") as string;
-		const apiToken: string = config.get("apiToken") as string;
+		const username: string = config.get("simpleTM.username") as string;
+		const apiToken: string = config.get("simpleTM.apiToken") as string;
 		if (!username || !apiToken) {
 			vscode.window.showErrorMessage("请在设置中填写账号与API Token后再使用同步功能");
 			return;
 		}
-		const BASE_URL = config.get('remoteHost');
+		const BASE_URL = config.get('simpleTM.remoteHost');
 		let GameTitle: string = context.workspaceState.get("game") as string;
 		vscode.window.showInputBox({ placeHolder: '(' + GameTitle + ')输入翻译文本' })
 			.then((translate: string | undefined) => {
@@ -186,13 +186,13 @@ export function activate(context: vscode.ExtensionContext) {
 	});
 	let newContextMenu_Update = vscode.commands.registerCommand('Extension.dltxt.context_menu_update',　function () {
 		const config = vscode.workspace.getConfiguration("dltxt");
-		const username: string = config.get("username") as string;
-		const apiToken: string = config.get("apiToken") as string;
+		const username: string = config.get("simpleTM.username") as string;
+		const apiToken: string = config.get("simpleTM.apiToken") as string;
 		if (!username || !apiToken) {
 			vscode.window.showErrorMessage("请在设置中填写账号与API Token后再使用同步功能");
 			return;
 		}
-		const BASE_URL = config.get('remoteHost');
+		const BASE_URL = config.get('simpleTM.remoteHost');
 		let GameTitle: string = context.workspaceState.get("game") as string;
 		vscode.window.showInputBox({ placeHolder: '(' + GameTitle + ')输入翻译文本' })
 			.then((translate: string | undefined) => {
@@ -427,15 +427,16 @@ TODO:
 3. Chinese Readme [DONE]
 4. auto scroll to middle on hotkey [DONE]
 5. update request format to fit remote update [DONE]
--- v1.1
-1. codelens for each keyword
-2. - configutable interval time 
-
--- v1.2
-1. auto preprocess based on database
-	- update database on load
-	- command to preprocess
-	- command to force update
+-- v1.3
+- Auto format (configurable)
+ -　... -> …… [DONE]
+ -　引号 []
+ -　半角－＞全角 [DONE]
+ -　文本末尾句号 [DONE]
+ -　破折号 [DONE]
+ -　波浪号 [DONE]
+-- v2.0
+ - 机翻Ｈ文本
 
 
 

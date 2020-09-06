@@ -36,3 +36,16 @@ export function countStartingUnimportantChar(txt: string, start: number) : numbe
   }
   return n;
 };
+
+export function toDBC(txtstring: string) { 
+  var tmp = ""; 
+  for(var i=0;i<txtstring.length;i++) { 
+      if(txtstring.charCodeAt(i)==32){ 
+          tmp= tmp+ String.fromCharCode(12288); 
+      } 
+      if(txtstring.charCodeAt(i)<127){ 
+          tmp=tmp+String.fromCharCode(txtstring.charCodeAt(i)+65248); 
+      } 
+  } 
+  return tmp; 
+}
