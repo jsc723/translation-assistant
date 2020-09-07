@@ -2,6 +2,7 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 import axios from 'axios';
+var open = require('open');
 import {
 	findLastMatchIndex,
 	countCharBeforeNewline,
@@ -400,6 +401,25 @@ export function activate(context: vscode.ExtensionContext) {
 		
 	});
 
+	let searchWord1 = vscode.commands.registerCommand('Extension.dltxt.searchWord1', () => {
+		let editor = vscode.window.activeTextEditor;
+		if (!editor || !editor.selection)
+			return;
+		let word = editor.document.getText(editor.selection);
+		const config = vscode.workspace.getConfiguration("dltxt.query");
+		let base_url = config.get("search1");
+		open(`${base_url}${encodeURI(word)}`);
+	});
+	let searchWord2 = vscode.commands.registerCommand('Extension.dltxt.searchWord2', () => {
+		let editor = vscode.window.activeTextEditor;
+		if (!editor || !editor.selection)
+			return;
+		let word = editor.document.getText(editor.selection);
+		const config = vscode.workspace.getConfiguration("dltxt.query");
+		let base_url = config.get("search2");
+		open(`${base_url}${encodeURI(word)}`);
+	});
+
 	context.subscriptions.push(
 		syncDatabaseCommand,
 		newContextMenu_Insert,
@@ -409,7 +429,9 @@ export function activate(context: vscode.ExtensionContext) {
 		prevLine,
 		copyOriginalCmd,
 		mergeIntoDoubleLine,
-		extractSingleline
+		extractSingleline,
+		searchWord1,
+		searchWord2
 	);
 	vscode.languages.registerDocumentFormattingEditProvider('dltxt', {
 		provideDocumentFormattingEdits(document: vscode.TextDocument): vscode.TextEdit[] {
@@ -458,7 +480,13 @@ TODO:
  -　波浪号 [DONE]
 -- v2.1
  - 右键菜单 [DONE]
- - 优化提取、应有译文功能[DONE]
+ - 优化提取、应用译文功能[DONE]
+-- v2.2
+ - 查词
+-- v2.3
+ - 浅色主题
+ - 测试正则表达式
+
 
 
 

@@ -4,7 +4,7 @@
 	"publisher": "jsc723",
 	"icon": "assets/logo.png",
 	"description": "",
-	"version": "2.1.1",
+	"version": "2.2.0",
 	"engines": {
 		"vscode": "^1.47.0"
 	},
@@ -101,9 +101,17 @@
 			{
 				"command": "Extension.dltxt.copy_original",
 				"title": "DLTXT: 复制原文到未翻译的译文行"
+			},
+			{
+				"command": "Extension.dltxt.searchWord1",
+				"title": "DLTXT: 联网搜索（引擎1）"
+			},
+			{
+				"command": "Extension.dltxt.searchWord2",
+				"title": "DLTXT: 联网搜索（引擎2）"
 			}
 		],
-		"keybindings":[
+		"keybindings": [
 			{
 				"command": "Extension.dltxt.next",
 				"key": "alt+enter"
@@ -152,12 +160,22 @@
 					"when": "resourceLangId == dltxt",
 					"command": "Extension.dltxt.copy_original",
 					"group": "dltxt.edit"
+				},
+				{
+					"when": "editorHasSelection",
+					"command": "Extension.dltxt.searchWord1",
+					"group": "dltxt.query"
+				},
+				{
+					"when": "editorHasSelection",
+					"command": "Extension.dltxt.searchWord2",
+					"group": "dltxt.query"
 				}
 			]
 		},
 		"configuration": {
-      "title": "dltxt",
-      "properties": {
+			"title": "dltxt",
+			"properties": {
 				"dltxt.simpleTM.remoteHost": {
 					"type": "string",
 					"default": "https://jsccsj.com",
@@ -171,15 +189,15 @@
 					"type": "string",
 					"description": "SimpleTM APIToken （登录后可以在你的主页上找到）"
 				},
-        "dltxt.core.originalTextPrefixRegex": {
-          "type": "string",
-          "default": "(\\[[a-z0-9]+\\])|((★|○)[a-z0-9]+(★|○))|((<\\d+>)?//)",
-          "description": "描述原文开头的正则表达式"
-        },
-        "dltxt.core.translatedTextPrefixRegex": {
-          "type": "string",
-          "default": "(;\\[[a-z0-9]+\\])|((☆|●)[a-z0-9]+(☆|●))|(<\\d+>(?!//))|((//[^\n]*\n)(?!<\\d+>))",
-          "description": "描述译文开头的正则表达式"
+				"dltxt.core.originalTextPrefixRegex": {
+					"type": "string",
+					"default": "(\\[[a-z0-9]+\\])|((★|○)[a-z0-9]+(★|○))|((<\\d+>)?//)",
+					"description": "描述原文开头的正则表达式"
+				},
+				"dltxt.core.translatedTextPrefixRegex": {
+					"type": "string",
+					"default": "(;\\[[a-z0-9]+\\])|((☆|●)[a-z0-9]+(☆|●))|(<\\d+>(?!//))|((//[^\n]*\n)(?!<\\d+>))",
+					"description": "描述译文开头的正则表达式"
 				},
 				"dltxt.appearance.showKeywordHighlight": {
 					"type": "boolean",
@@ -225,9 +243,19 @@
 					"type": "boolean",
 					"default": true,
 					"description": "格式化文本：去除对话句末的句号"
+				},
+				"dltxt.query.search1": {
+					"type": "string",
+					"default": "https://dict.hjenglish.com/jp/jc/",
+					"description": "搜索引擎1"
+				},
+				"dltxt.query.search2": {
+					"type": "string",
+					"default": "https://thesaurus.weblio.jp/content/",
+					"description": "搜索引擎2"
 				}
-      }
-    }
+			}
+		}
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",
@@ -252,10 +280,11 @@
 	},
 	"dependencies": {
 		"axios": "^0.19.2",
+		"open": "^7.2.1",
 		"request": "^2.88.2"
 	},
 	"repository": {
-    "type": "git",
-    "url": "https://github.com/jsc723/translation-assistant.git"
-  }
+		"type": "git",
+		"url": "https://github.com/jsc723/translation-assistant.git"
+	}
 }
