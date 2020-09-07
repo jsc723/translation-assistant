@@ -35,6 +35,11 @@ Provides Translation support for common type double-line-txt-file-for-translatio
   - 将英文与数字统一为全角（默认关闭）　（`123ABCdef -> １２３ＡＢＣｄｅｆ`）
   - 去除对话句末的句号　（`。」-> 」`）
 
+- 联网查词
+  - 选中一个词，右键，选择`DLTXT: 联网搜索（引擎x）`
+  - 默认引擎1为沪江小D（日->中），引擎2为weblio類語辞典
+  - 在设置中搜索`dltxt.query`可以自定义搜索引擎
+
 - 其他功能
   1. `复制原文到未翻译的译文行` （右键或命令框）
 
@@ -111,22 +116,25 @@ Provides Translation support for common type double-line-txt-file-for-translatio
 
 ## Release Notes
 
-## 2.1
+#### 2.2
+- 联网查词
+
+#### 2.1
 - 命令整合至右键菜单，增加易用性
 - 应用单行译文时不再需要选中双行文本
 
-## 2.0
+#### 2.0
 - 格式化文本：功能增至8种
 - 更新设置格式（与之前版本不兼容，需要重新填写设置）
 
-## 1.2
+#### 1.2
 - 格式化文本；自动添加空格、括号
 
-## 1.1
+#### 1.1
 - 提取译文
 - 将修改后的译文再应用到双行文本中
 
-### 1.0
+#### 1.0
 - 项目管理
   - 添加、删除项目
   - 将其他用户添加到自己的项目
@@ -135,11 +143,11 @@ Provides Translation support for common type double-line-txt-file-for-translatio
 - 用户需要使用用户名和APIToken才能使用云端同步功能
 - 因为数据库更新，服务器停止了对1.0之前版本的支持
 
-### 0.9
+#### 0.9
 - keyword defining/highlighting/syncing (beta)
 - `Ctrl + Enter` and `Ctrl + \` gives the same effect as `Alt + ...`
 
-### 0.2
+#### 0.2
 - syntax highlights for common formats
   - auto name tag inferring
 - hotkey support for common formats

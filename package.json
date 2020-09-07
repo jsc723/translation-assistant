@@ -1,6 +1,6 @@
 {
 	"name": "translateassistant",
-	"displayName": "Translate Assistant for Double Line TxT Files",
+	"displayName": "双行文本翻译辅助工具 - Translate Assistant for Double Line TxT Files",
 	"publisher": "jsc723",
 	"icon": "assets/logo.png",
 	"description": "",
@@ -13,10 +13,7 @@
 	],
 	"activationEvents": [
 		"onLanguage:dltxt",
-		"onLanguage:sltxt",
-		"onCommand:Extension.setGame",
-		"onCommand:Extension.context_menu_insert",
-		"onCommand:Extension.context_menu_update"
+		"onLanguage:sltxt"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
