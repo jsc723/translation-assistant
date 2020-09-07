@@ -4,7 +4,7 @@
 	"publisher": "jsc723",
 	"icon": "assets/logo.png",
 	"description": "",
-	"version": "2.0.0",
+	"version": "2.1.0",
 	"engines": {
 		"vscode": "^1.47.0"
 	},
@@ -13,6 +13,7 @@
 	],
 	"activationEvents": [
 		"onLanguage:dltxt",
+		"onLanguage:sltxt",
 		"onCommand:Extension.setGame",
 		"onCommand:Extension.context_menu_insert",
 		"onCommand:Extension.context_menu_update"
@@ -27,6 +28,15 @@
 				],
 				"extensions": [
 					".txt"
+				]
+			},
+			{
+				"id": "sltxt",
+				"aliases": [
+					"Single Line TXT translation extracted from dltxt"
+				],
+				"extensions": [
+					".txt.sl"
 				]
 			}
 		],
@@ -58,7 +68,7 @@
 		"commands": [
 			{
 				"command": "Extension.dltxt.sync_database",
-				"title": "DLTXT: 拉取云端数据"
+				"title": "DLTXT: 拉取云端词条"
 			},
 			{
 				"command": "Extension.dltxt.context_menu_insert",
@@ -70,11 +80,11 @@
 			},
 			{
 				"command": "Extension.dltxt.extract_single_line",
-				"title": "DLTXT: 从双行文本中提取单行译文"
+				"title": "DLTXT: 提取译文"
 			},
 			{
 				"command": "Extension.dltxt.merge_into_double_line",
-				"title": "DLTXT: 将单行译文应用至双行文本"
+				"title": "DLTXT: 应用译文至双行文本"
 			},
 			{
 				"command": "Extension.dltxt.setGame",
@@ -114,12 +124,34 @@
 		"menus": {
 			"editor/context": [
 				{
-					"when": "editorHasSelection",
-					"command": "Extension.dltxt.context_menu_insert"
+					"when": "editorHasSelection && resourceLangId == dltxt",
+					"command": "Extension.dltxt.context_menu_insert",
+					"group": "dltxt.simpleTM.a"
 				},
 				{
-					"when": "editorHasSelection",
-					"command": "Extension.dltxt.context_menu_update"
+					"when": "editorHasSelection && resourceLangId == dltxt",
+					"command": "Extension.dltxt.context_menu_update",
+					"group": "dltxt.simpleTM.a"
+				},
+				{
+					"when": "resourceLangId == dltxt",
+					"command": "Extension.dltxt.setGame",
+					"group": "dltxt.simpleTM.b"
+				},
+				{
+					"when": "resourceLangId == dltxt",
+					"command": "Extension.dltxt.extract_single_line",
+					"group": "dltxt.extract"
+				},
+				{
+					"when": "resourceLangId == dltxt || resourceLangId == sltxt",
+					"command": "Extension.dltxt.merge_into_double_line",
+					"group": "dltxt.extract"
+				},
+				{
+					"when": "resourceLangId == dltxt",
+					"command": "Extension.dltxt.copy_original",
+					"group": "dltxt.edit"
 				}
 			]
 		},

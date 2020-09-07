@@ -22,6 +22,8 @@ export function editTranslation(context: vscode.ExtensionContext, document: vsco
       for (let op of ops) {
         const cmatch = creg.exec(nextLineText);
         const cgrps = cmatch?.groups;
+        if (!jgrps || !cgrps)
+          break;
         const r = op(jgrps, cgrps);
         if (r)
           nextLineText = r;
@@ -75,6 +77,8 @@ export function formatter(context: vscode.ExtensionContext, document: vscode.Tex
     ['\\;', '；'],
     ['\\!', '！'],
     ['\\?', '？'],
+    ['\\(', '（'],
+    ['\\)', '）'],
     ['『', '“'],
     ['』', '”'],
     ['\\s', '　'],
