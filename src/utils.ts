@@ -25,16 +25,18 @@ export function countCharBeforeNewline(text: string, startIdx: number) : number{
   return m;
 };
 
-export function setCursorAndScroll(editor: vscode.TextEditor, dn: number, m: number) {
+export function setCursorAndScroll(editor: vscode.TextEditor, dn: number, m: number, scroll: boolean = true) {
   const position = editor.selection.active;
   const targetLine = position.line + dn;
   const newPosition = position.with(targetLine, m);
   editor.selection = new vscode.Selection(newPosition, newPosition);
-  const curRange = editor.visibleRanges[0];
-  const halfHeight = Math.floor((curRange.end.line - curRange.start.line))/2;
-  const pStart = curRange.start.with(Math.max(0, targetLine - halfHeight));
-  const pEnd = curRange.start.with(Math.max(0, targetLine + halfHeight));
-  editor.revealRange(curRange.with(pStart, pEnd));
+  if (scroll) {
+    const curRange = editor.visibleRanges[0];
+    const halfHeight = Math.floor((curRange.end.line - curRange.start.line)) / 2;
+    const pStart = curRange.start.with(Math.max(0, targetLine - halfHeight));
+    const pEnd = curRange.start.with(Math.max(0, targetLine + halfHeight));
+    editor.revealRange(curRange.with(pStart, pEnd));
+  }
 };
 
 const dictionary = new Set();

@@ -10,6 +10,7 @@ Provides Translation support for common type double-line-txt-file-for-translatio
 - 快捷键：
   - `Alt + Enter` 或 `Ctrl + Enter`移动到下一个译文行标签之后（例如这里的`|`的位置：`☆00000002☆「|`）
   - `Alt + \` 或 `Ctrl + \`移动到上一个译文行标签之后
+  - `Ctrl + Alt + Space` 将当前句的第一个字重复一遍并加一个逗号（例`。是吗|，`->`。是、是吗|，`）
 
 - 选中文本中一个词语，可右键定义为该词为关键字
   - 对关键字的翻译会同步到云端，全组共享
@@ -39,6 +40,7 @@ Provides Translation support for common type double-line-txt-file-for-translatio
   - 选中一个词，右键，选择`DLTXT: 联网搜索（引擎x）`
   - 默认引擎1为沪江小D（日->中），引擎2为weblio類語辞典
   - 在设置中搜索`dltxt.query`可以自定义搜索引擎
+  - 查询时会打开默认浏览器，Windows10可以在`默认应用设置`中设置默认浏览器
 
 - 其他功能
   1. `复制原文到未翻译的译文行` （右键或命令框）
@@ -115,6 +117,10 @@ Provides Translation support for common type double-line-txt-file-for-translatio
 好像没什么问题
 
 ## Release Notes
+
+#### 2.3
+- 快捷键：重复当前句子的第一个字
+- theme: light
 
 #### 2.2
 - 联网查词

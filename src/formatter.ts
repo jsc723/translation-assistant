@@ -2,22 +2,37 @@ import * as vscode from 'vscode';
 import { toDBC } from './utils';
 import { SSL_OP_SSLEAY_080_CLIENT_DH_BUG } from 'constants';
 
-export function editTranslation(context: vscode.ExtensionContext, document: vscode.TextDocument, ops: Array<CallableFunction>): vscode.TextEdit[] {
+function getRegex() {
   const config = vscode.workspace.getConfiguration("dltxt");
   const jPreStr = config.get('core.originalTextPrefixRegex') as string;
   const cPreStr = config.get('core.translatedTextPrefixRegex') as string;
   if (!jPreStr || !cPreStr) {
-    return [];
+    return [undefined, undefined];
   }
-  const jreg = new RegExp(`^(${jPreStr})(?<white>\\s*[「『]?)(?<text>.*?)(?<suffix>[」』]?)$`);
-  const creg = new RegExp(`^(?<prefix>${cPreStr})(?<white>\\s*[「『]?)(?<text>.*?)(?<suffix>[」』]?)$`);
+  const jreg = new RegExp(`^(${jPreStr})(?<white>\\s*[「]?)(?<text>.*?)(?<suffix>[」]?)$`);
+  const creg = new RegExp(`^(?<prefix>${cPreStr})(?<white>\\s*[「]?)(?<text>.*?)(?<suffix>[」]?)$`);
+  return [jreg, creg];
+}
+
+function editTranslation(
+  context: vscode.ExtensionContext,
+  document: vscode.TextDocument,
+  ops: Array<CallableFunction>,
+  lines?: Array<number>
+) {
+  const [jreg, creg] = getRegex();
+  if (!jreg || !creg)
+    return [];
   const result = [];
-  for (let i = 0; i < document.lineCount; i++) {
+  if (!lines) {
+    lines = [...Array(document.lineCount).keys()];
+  }
+  for (let i of lines) {
     const line = document.lineAt(i);
     const jmatch = jreg.exec(line.text);
     if (jmatch && i + 1 < document.lineCount) {
       const jgrps = jmatch.groups;
-      const nextLine = document.lineAt(++i);
+      const nextLine = document.lineAt(i + 1);
       let nextLineText = nextLine.text;
       for (let op of ops) {
         const cmatch = creg.exec(nextLineText);
@@ -154,8 +169,29 @@ export function copyOriginalToTranslation(context: vscode.ExtensionContext, docu
     }
   };
   ops.push(copy);
-  const edits = editTranslation(context, document, ops);
-  for (let edit of edits) {
+  editTranslation(context, document, ops).forEach(edit => {
     editBuilder.replace(edit.range, edit.newText);
-  }
+  });
 }
+export function repeatFirstChar(context: vscode.ExtensionContext, editor: vscode.TextEditor, editBuilder: vscode.TextEditorEdit){
+
+  const document = editor.document;
+  const cur = editor.selection.start;
+	const curLine = document.lineAt(editor.selection.start.line)
+  let curChar = cur.character;
+  const rep = (jgrps: any, cgrps: any) => {
+    let text: string = cgrps.text as string;
+    let i = curChar - cgrps?.prefix.length - cgrps?.white.length;
+    while (i > 0 && i - 1 < text.length && text[i - 1].match(/[^，。、？！…—；：“”‘’~～「」「」\[\]\(\)（）【】]/)) {
+      i--;
+    }
+    if (i < text.length) {
+      text = text.substr(0, i) + text.substr(i, 1) + '、' + text.substr(i);
+    }
+    return `${cgrps?.prefix}${cgrps?.white}${text}${cgrps?.suffix}`;
+  }
+  editTranslation(context, document, [rep], [curLine.lineNumber - 1])
+    .forEach(edit => { editBuilder.replace(edit.range, edit.newText) });
+}
+
+

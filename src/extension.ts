@@ -11,7 +11,10 @@ import {
 } from './utils';
 import * as fs from "fs"; 
 import * as path from "path";
-import { formatter, copyOriginalToTranslation } from "./formatter";
+import {
+	formatter, copyOriginalToTranslation,
+	repeatFirstChar
+} from "./formatter";
 /*
 (;\\[[a-z0-9]+\\])|((☆|●)[a-z0-9]+(☆|●))|(<\\d+>(?!//))|(//.*\n)
 */
@@ -401,6 +404,17 @@ export function activate(context: vscode.ExtensionContext) {
 		
 	});
 
+	let repeatFirst = vscode.commands.registerCommand('Extension.dltxt.repeatFirst', () => {
+		let editor = vscode.window.activeTextEditor;
+		let document = editor?.document;
+		if (!editor || !document) 
+			return;
+		editor.edit(editBuilder => {
+			repeatFirstChar(context, editor as vscode.TextEditor, editBuilder);
+		})
+		setCursorAndScroll(editor, 0, editor.selection.start.character + 2, false);
+	});
+
 	let searchWord1 = vscode.commands.registerCommand('Extension.dltxt.searchWord1', () => {
 		let editor = vscode.window.activeTextEditor;
 		if (!editor || !editor.selection)
@@ -427,6 +441,7 @@ export function activate(context: vscode.ExtensionContext) {
 		setGame,
 		nextLine,
 		prevLine,
+		repeatFirst,
 		copyOriginalCmd,
 		mergeIntoDoubleLine,
 		extractSingleline,
@@ -474,7 +489,7 @@ TODO:
 - Auto format (configurable)
  -　... -> …… [DONE]
  -　引号 []
- -　半角－＞全角 [DONE]
+ -　半角－＞全角 [DONE] 
  -　文本末尾句号 [DONE]
  -　破折号 [DONE]
  -　波浪号 [DONE]
@@ -482,10 +497,11 @@ TODO:
  - 右键菜单 [DONE]
  - 优化提取、应用译文功能[DONE]
 -- v2.2
- - 查词
+ - 查词 [DONE]
 -- v2.3
- - 浅色主题
- - 测试正则表达式
+ - 自动变结巴 [DONE]
+ - 浅色主题 [DONE]
+ - 修正sync database的问题
 
 
 

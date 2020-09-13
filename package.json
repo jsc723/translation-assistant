@@ -4,7 +4,7 @@
 	"publisher": "jsc723",
 	"icon": "assets/logo.png",
 	"description": "",
-	"version": "2.2.0",
+	"version": "2.3.3",
 	"engines": {
 		"vscode": "^1.47.0"
 	},
@@ -49,6 +49,11 @@
 				"label": "DLTXT Dark+",
 				"uiTheme": "vs-dark",
 				"path": "themes/dltxt_dark.json"
+			},
+			{
+				"label": "DLTXT Light+",
+				"uiTheme": "vs",
+				"path": "themes/dltxt_light.json"
 			}
 		],
 		"colors": [
@@ -96,6 +101,10 @@
 				"title": "DLTXT: 移动到上一行翻译"
 			},
 			{
+				"command": "Extension.dltxt.repeatFirst",
+				"title": "DLTXT: 重复当前句的第一个字"
+			},
+			{
 				"command": "Extension.dltxt.copy_original",
 				"title": "DLTXT: 复制原文到未翻译的译文行"
 			},
@@ -124,6 +133,10 @@
 			{
 				"command": "Extension.dltxt.prev",
 				"key": "ctrl+\\"
+			},
+			{
+				"command": "Extension.dltxt.repeatFirst",
+				"key": "ctrl+alt+space"
 			}
 		],
 		"menus": {
