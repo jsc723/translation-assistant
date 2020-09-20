@@ -64,3 +64,7 @@ export function toDBC(txtstring: string) {
   } 
   return tmp; 
 }
+
+export function contains(str: string, search: string) {
+  return str.indexOf(search) >= 0;
+}

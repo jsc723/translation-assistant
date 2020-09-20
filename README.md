@@ -114,9 +114,13 @@ Provides Translation support for common type double-line-txt-file-for-translatio
   -> 把 `Editor: Font Family` 设成  `SimHei` （黑体） <br>
 
 ## 已知问题
-好像没什么问题
+2.3及以下版本在自动添加括号时，有可能漏添、多添，问题已在2.4版本中修复
 
 ## Release Notes
+
+#### 2.4
+- 大幅提高文本格式化算法可靠性，解决了添括号时对『双层直角括号』处理不正确的问题
+- 优化运行速度
 
 #### 2.3
 - 快捷键：重复当前句子的第一个字

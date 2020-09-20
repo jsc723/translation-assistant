@@ -1,6 +1,5 @@
 import * as vscode from 'vscode';
-import { toDBC } from './utils';
-import { SSL_OP_SSLEAY_080_CLIENT_DH_BUG } from 'constants';
+import { toDBC, contains } from './utils';
 
 function getRegex() {
   const config = vscode.workspace.getConfiguration("dltxt");
@@ -9,9 +8,79 @@ function getRegex() {
   if (!jPreStr || !cPreStr) {
     return [undefined, undefined];
   }
-  const jreg = new RegExp(`^(${jPreStr})(?<white>\\s*[「]?)(?<text>.*?)(?<suffix>[」]?)$`);
+  const jreg = new RegExp(`^(?<prefix>${jPreStr})(?<white>\\s*[「]?)(?<text>.*?)(?<suffix>[」]?)$`);
   const creg = new RegExp(`^(?<prefix>${cPreStr})(?<white>\\s*[「]?)(?<text>.*?)(?<suffix>[」]?)$`);
   return [jreg, creg];
+}
+
+interface MatchedGroups {
+  prefix: string;
+  white: string;
+  text: string;
+  suffix: string;
+}
+function checkValid(text: string): boolean[] {
+  let stack: number[] = [];
+  
+  for (let i = 0; i < text.length; i++) {
+    let c = text[i];
+    if (c === '『') {
+      stack.push(i);
+    }
+    else if (c === '』') {
+      if (stack.length > 0) {
+        let k = stack.pop();
+        if (k === 0) {
+          if (i === text.length - 1) {
+            return [true, true]
+          } 
+        }
+      } else if (i === text.length - 1) {
+        return [false, true]
+      }
+    }
+  }
+  return [stack[0] === 0, false];
+}
+function adjust(jgrps: MatchedGroups, cgrps: MatchedGroups) {
+  if (contains(jgrps.white, '「') || contains(jgrps.suffix, '」') || !jgrps.text)
+    return;
+  if (jgrps.text[0] !== '『' && jgrps.text[jgrps.text.length - 1] !== '』')
+    return;
+  const [prefix, suffix] = checkValid(jgrps.text);
+  if (prefix || suffix) {
+    if (prefix) {
+      jgrps.white += '『';
+      jgrps.text = jgrps.text.substring(1);
+    }
+    if (suffix) {
+      jgrps.suffix = '』' + jgrps.suffix;
+      jgrps.text = jgrps.text.substring(0, jgrps.text.length - 1);
+    }
+    if (prefix && !suffix) {
+      let cm = cgrps.text.match(/^(?<a>[『“]?)(?<b>.*)$/)
+      if (cm?.groups?.a) {
+        cgrps.white += cm.groups.a;
+        cgrps.text = cgrps.text.substring(1);
+      }
+    } else if (!prefix && suffix) {
+      let cm = cgrps.text.match(/^(?<b>.*?)(?<c>[”』]?)$/)
+      if (cm?.groups?.c) {
+        cgrps.suffix += cm.groups.c;
+        cgrps.text = cgrps.text.substring(0, cgrps.text.length - 1);
+      }
+    } else if (prefix && suffix) {
+      let cm = cgrps.text.match(/^(?<a>[『“]?)(?<b>.*?)(?<c>[”』]?)$/)
+      if (cm?.groups?.a) {
+        cgrps.white += cm.groups.a;
+        cgrps.text = cgrps.text.substring(1);
+      }
+      if (cm?.groups?.c) {
+        cgrps.suffix += cm.groups.c;
+        cgrps.text = cgrps.text.substring(0, cgrps.text.length - 1);
+      }
+    }
+  }
 }
 
 function editTranslation(
@@ -31,18 +100,18 @@ function editTranslation(
     const line = document.lineAt(i);
     const jmatch = jreg.exec(line.text);
     if (jmatch && i + 1 < document.lineCount) {
-      const jgrps = jmatch.groups;
+      const jgrps = jmatch.groups as any as MatchedGroups;
       const nextLine = document.lineAt(i + 1);
       let nextLineText = nextLine.text;
+      const cmatch = creg.exec(nextLineText);
+      const cgrps = cmatch?.groups as any as MatchedGroups;
+      if (!jgrps || !cgrps)
+        continue;
+      adjust(jgrps, cgrps);
       for (let op of ops) {
-        const cmatch = creg.exec(nextLineText);
-        const cgrps = cmatch?.groups;
-        if (!jgrps || !cgrps)
-          break;
-        const r = op(jgrps, cgrps);
-        if (r)
-          nextLineText = r;
+        op(jgrps, cgrps);
       }
+      nextLineText = `${cgrps?.prefix}${cgrps?.white}${cgrps?.text}${cgrps?.suffix}`
       result.push(vscode.TextEdit.replace(nextLine.range, nextLineText));
     }
   }
@@ -52,34 +121,35 @@ function editTranslation(
 export function formatter(context: vscode.ExtensionContext, document: vscode.TextDocument): vscode.TextEdit[] {
   const config = vscode.workspace.getConfiguration("dltxt");
   const ops: Array<CallableFunction> = [];
-  const padding = (jgrps: any, cgrps: any) => {
-    return `${cgrps?.prefix}${jgrps?.white}${cgrps?.text}${jgrps?.suffix}`;
+  const padding = (jgrps: MatchedGroups, cgrps: MatchedGroups) => {
+    if (contains(jgrps.text, '「') || contains(jgrps.text, '」'))
+      return;
+    cgrps.white = jgrps.white;
+    cgrps.suffix = jgrps.suffix;
   };
   if(config.get("formatter.a.padding"))
     ops.push(padding);
 
-  const ellipsis = (jgrps: any, cgrps: any) => {
+  const ellipsis = (jgrps: MatchedGroups, cgrps: MatchedGroups) => {
     let text: string = cgrps.text as string;
     text = text.replace(/\.{2,}/g, '……');
     text = text.replace(/。{2,}/g, '……');
-    return `${cgrps?.prefix}${cgrps?.white}${text}${cgrps?.suffix}`;
+    cgrps.text = text;
   };
   if(config.get("formatter.a.ellipsis"))
     ops.push(ellipsis);
 
-  const wave = (jgrps: any, cgrps: any) => {
-    let text: string = cgrps.text as string;
-    text = text.replace(/[~∼〜～]/g, '～');
-    return `${cgrps?.prefix}${cgrps?.white}${text}${cgrps?.suffix}`;
+  const wave = (jgrps: MatchedGroups, cgrps: MatchedGroups) => {
+    cgrps.text = cgrps.text.replace(/[~∼〜～]/g, '～');
   };
   if(config.get("formatter.a.wave"))
     ops.push(wave);
 
-  const horizontalLine = (jgrps: any, cgrps: any) => {
+  const horizontalLine = (jgrps: MatchedGroups, cgrps: MatchedGroups) => {
     let text: string = cgrps.text as string;
     text = text.replace(/[ー－\-]/g, '—');
     text = text.replace(/(?<!—)—(?!—)/g, '——');
-    return `${cgrps?.prefix}${cgrps?.white}${text}${cgrps?.suffix}`;
+    cgrps.text = text;
   };
   if(config.get("formatter.a.horizontalLine"))
     ops.push(horizontalLine);
@@ -102,30 +172,30 @@ export function formatter(context: vscode.ExtensionContext, document: vscode.Tex
     let reg = new RegExp(entry[0], 'g');
     entry.push(reg);
   }
-  const h2fPunc = (jgrps: any, cgrps: any) => {
+  const h2fPunc = (jgrps: MatchedGroups, cgrps: MatchedGroups) => {
     let text: string = cgrps.text as string;
     for (const [key, val, reg] of puncMap) {
       text = text.replace(reg, val);
     }
-    return `${cgrps?.prefix}${cgrps?.white}${text}${cgrps?.suffix}`;
+    cgrps.text = text;
   };
   if(config.get("formatter.b.h2fPunc"))
     ops.push(h2fPunc);
 
-  const h2fAlpha = (jgrps: any, cgrps: any) => {
+  const h2fAlpha = (jgrps: MatchedGroups, cgrps: MatchedGroups) => {
     let text: string = cgrps.text as string;
     let regAplha = /[0-9a-zA-Z]/g;
     let match;
     while (match = regAplha.exec(text)) {
       text = text.replace(match[0], toDBC(match[0]));
     }
-    return `${cgrps?.prefix}${cgrps?.white}${text}${cgrps?.suffix}`;
+    cgrps.text = text;
   };
   if(config.get("formatter.b.h2fAlpha"))
   ops.push(h2fAlpha);
   
   function fixReversedQuote(qStart: string, qEnd: string, qAlter?: string) {
-    return (jgrps: any, cgrps: any) => {
+    return (jgrps: MatchedGroups, cgrps: MatchedGroups) => {
       let text: string = cgrps.text as string;
       let state = false;
       let possibleText = '';
@@ -140,7 +210,7 @@ export function formatter(context: vscode.ExtensionContext, document: vscode.Tex
       if (!state) {
         text = possibleText;
       }
-      return `${cgrps?.prefix}${cgrps?.white}${text}${cgrps?.suffix}`;
+      cgrps.text = text;
     };
   }
   if (config.get("formatter.b.fixReversedQuote")) {
@@ -148,12 +218,10 @@ export function formatter(context: vscode.ExtensionContext, document: vscode.Tex
     ops.push(fixReversedQuote('‘', '’', "'"));
   }
 
-  const omitPeriod = (jgrps: any, cgrps: any) => {
-    let text: string = cgrps.text as string;
+  const omitPeriod = (jgrps: MatchedGroups, cgrps: MatchedGroups) => {
     if (cgrps?.suffix === '」' || cgrps?.suffix === '』') {
-      text = text.replace(/(?<![\.。])[\.。]$/g, '');
-    } 
-    return `${cgrps?.prefix}${cgrps?.white}${text}${cgrps?.suffix}`;
+      cgrps.text = cgrps.text.replace(/(?<![\.。])[\.。]$/g, '');
+    }
   };
   if(config.get("formatter.c.omitPeriod"))
     ops.push(omitPeriod);
@@ -163,9 +231,11 @@ export function formatter(context: vscode.ExtensionContext, document: vscode.Tex
 
 export function copyOriginalToTranslation(context: vscode.ExtensionContext, document: vscode.TextDocument, editBuilder: vscode.TextEditorEdit){
   const ops: Array<CallableFunction> = [];
-  const copy = (jgrps: any, cgrps: any) => {
+  const copy = (jgrps: MatchedGroups, cgrps: MatchedGroups) => {
     if (!cgrps?.text) {
-      return `${cgrps?.prefix}${jgrps?.white}${jgrps?.text}${jgrps?.suffix}`;
+      cgrps.white = jgrps.white;
+      cgrps.text = jgrps.text;
+      cgrps.suffix = jgrps.suffix;
     }
   };
   ops.push(copy);
@@ -179,7 +249,7 @@ export function repeatFirstChar(context: vscode.ExtensionContext, editor: vscode
   const cur = editor.selection.start;
 	const curLine = document.lineAt(editor.selection.start.line)
   let curChar = cur.character;
-  const rep = (jgrps: any, cgrps: any) => {
+  const rep = (jgrps: MatchedGroups, cgrps: MatchedGroups) => {
     let text: string = cgrps.text as string;
     let i = curChar - cgrps?.prefix.length - cgrps?.white.length;
     while (i > 0 && i - 1 < text.length && text[i - 1].match(/[^，。、？！…—；：“”‘’~～「」「」\[\]\(\)（）【】]/)) {
@@ -188,7 +258,7 @@ export function repeatFirstChar(context: vscode.ExtensionContext, editor: vscode
     if (i < text.length) {
       text = text.substr(0, i) + text.substr(i, 1) + '、' + text.substr(i);
     }
-    return `${cgrps?.prefix}${cgrps?.white}${text}${cgrps?.suffix}`;
+    cgrps.text = text;
   }
   editTranslation(context, document, [rep], [curLine.lineNumber - 1])
     .forEach(edit => { editBuilder.replace(edit.range, edit.newText) });
