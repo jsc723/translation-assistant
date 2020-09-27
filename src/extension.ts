@@ -2,7 +2,8 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 import axios from 'axios';
-var open = require('open');
+import open = require('open');
+import { mojiTranslate } from './moji';
 import {
 	findLastMatchIndex,
 	countCharBeforeNewline,
@@ -415,6 +416,13 @@ export function activate(context: vscode.ExtensionContext) {
 		setCursorAndScroll(editor, 0, editor.selection.start.character + 2, false);
 	});
 
+	let searchWord0 = vscode.commands.registerCommand('Extension.dltxt.searchWord0', () => {
+		let editor = vscode.window.activeTextEditor;
+		if (!editor || !editor.selection)
+			return;
+		let word = editor.document.getText(editor.selection);
+		mojiTranslate(word);
+	});
 	let searchWord1 = vscode.commands.registerCommand('Extension.dltxt.searchWord1', () => {
 		let editor = vscode.window.activeTextEditor;
 		if (!editor || !editor.selection)
@@ -445,6 +453,7 @@ export function activate(context: vscode.ExtensionContext) {
 		copyOriginalCmd,
 		mergeIntoDoubleLine,
 		extractSingleline,
+		searchWord0,
 		searchWord1,
 		searchWord2
 	);
@@ -488,7 +497,7 @@ TODO:
 -- v2.0
 - Auto format (configurable)
  -　... -> …… [DONE]
- -　引号 []
+ -　引号 [DONE]
  -　半角－＞全角 [DONE] 
  -　文本末尾句号 [DONE]
  -　破折号 [DONE]
@@ -501,9 +510,20 @@ TODO:
 -- v2.3
  - 自动变结巴 [DONE]
  - 浅色主题 [DONE]
- - 修正sync database的问题
+-- v2.4
+ - 引号问题 [DONE]
+ - 修正sync database的问题 []
+-- v2.5
+ - 批量操作 []
 
-
-
+https://www.mojidict.com/_nuxt/app/b3f87f7f.f1a5be3.js
+            n._ApplicationId = r.a.parseApplicationId_prod,
+            n._InstallationId = r.a.parseInstallationId_prod,
+						n._ClientVersion = r.a.parseClientVersion_prod,
+										
+						parseClientVersion_prod: "js2.12.0",
+            parseInstallationId_prod: "5562c88b-b67a-c285-b9d1-a8360121380a",
+						parseApplicationId_prod: "E62VyFVLMiW7kvbtVq3p",
+document.cookie.split(';').map((s) => (s.trim().split('='))).filter((s)=>(s[0]==='pst'))[0].map(unescape)[1]
 
 */

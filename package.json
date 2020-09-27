@@ -4,7 +4,7 @@
 	"publisher": "jsc723",
 	"icon": "assets/logo.png",
 	"description": "",
-	"version": "2.4.0",
+	"version": "2.5.0",
 	"engines": {
 		"vscode": "^1.47.0"
 	},
@@ -109,6 +109,10 @@
 				"title": "DLTXT: 复制原文到未翻译的译文行"
 			},
 			{
+				"command": "Extension.dltxt.searchWord0",
+				"title": "DLTXT: 联网搜索（Moji辞書）"
+			},
+			{
 				"command": "Extension.dltxt.searchWord1",
 				"title": "DLTXT: 联网搜索（引擎1）"
 			},
@@ -137,6 +141,10 @@
 			{
 				"command": "Extension.dltxt.repeatFirst",
 				"key": "ctrl+alt+space"
+			},
+			{
+				"command": "Extension.dltxt.searchWord0",
+				"key": "ctrl+alt+m"
 			}
 		],
 		"menus": {
@@ -170,6 +178,11 @@
 					"when": "resourceLangId == dltxt",
 					"command": "Extension.dltxt.copy_original",
 					"group": "dltxt.edit"
+				},
+				{
+					"when": "editorHasSelection",
+					"command": "Extension.dltxt.searchWord0",
+					"group": "dltxt.query"
 				},
 				{
 					"when": "editorHasSelection",
