@@ -47,6 +47,9 @@ Provides translation support for common type double-line-txt-file-for-translatio
 ###### Moji辞書
   - 选中一个词，`Ctrl + Alt + m`，或右键，选择`DLTXT: 联网搜索（Moji辞書）`
   - 结果显示在Output面板中（第一次查询可能较慢）
+  - Moji辞書不登录时只能显示一个词条，如需查看多个词条请登录
+  - 登录/登出：`Ctrl + Shift + p`，搜索`moji`，选择`DLTXT: 登录/登出Moji辞書`
+  - 最大显示词条数：请更改设置`dltxt.moji.displayCount`
 ###### 其他
   - 选中一个词，右键，选择`DLTXT: 联网搜索（引擎x）`
   - 默认引擎1为沪江小D（日=>中），引擎2为weblio類語辞典

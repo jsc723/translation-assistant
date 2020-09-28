@@ -3,7 +3,7 @@
 import * as vscode from 'vscode';
 import axios from 'axios';
 import open = require('open');
-import { mojiTranslate } from './moji';
+import { mojiTranslate, mojiLogin, mojiLogout } from './moji';
 import {
 	findLastMatchIndex,
 	countCharBeforeNewline,
@@ -166,7 +166,7 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 		const BASE_URL = config.get('simpleTM.remoteHost');
 		let GameTitle: string = context.workspaceState.get("game") as string;
-		vscode.window.showInputBox({ placeHolder: '(' + GameTitle + ')输入翻译文本' })
+		vscode.window.showInputBox({ placeHolder: '(' + GameTitle + ')输入译文' })
 			.then((translate: string | undefined) => {
 				let editor = vscode.window.activeTextEditor;
 				if (editor && !editor.selection.isEmpty) {
@@ -202,7 +202,7 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 		const BASE_URL = config.get('simpleTM.remoteHost');
 		let GameTitle: string = context.workspaceState.get("game") as string;
-		vscode.window.showInputBox({ placeHolder: '(' + GameTitle + ')输入翻译文本' })
+		vscode.window.showInputBox({ placeHolder: '(' + GameTitle + ')输入译文' })
 			.then((translate: string | undefined) => {
 				let editor = vscode.window.activeTextEditor;
 				if (editor && !editor.selection.isEmpty) {
@@ -416,6 +416,13 @@ export function activate(context: vscode.ExtensionContext) {
 		setCursorAndScroll(editor, 0, editor.selection.start.character + 2, false);
 	});
 
+	let dLoginMoji = vscode.commands.registerCommand('Extension.dltxt.mojiLogin', () => {
+		mojiLogin();
+	});
+	let dLogoutMoji = vscode.commands.registerCommand('Extension.dltxt.mojiLogout', () => {
+		mojiLogout();
+	});
+
 	let searchWord0 = vscode.commands.registerCommand('Extension.dltxt.searchWord0', () => {
 		let editor = vscode.window.activeTextEditor;
 		if (!editor || !editor.selection)
@@ -453,6 +460,8 @@ export function activate(context: vscode.ExtensionContext) {
 		copyOriginalCmd,
 		mergeIntoDoubleLine,
 		extractSingleline,
+		dLoginMoji,
+		dLogoutMoji,
 		searchWord0,
 		searchWord1,
 		searchWord2
