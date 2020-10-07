@@ -4,12 +4,8 @@ import * as vscode from 'vscode';
 import axios from 'axios';
 import open = require('open');
 import { mojiTranslate, mojiLogin, mojiLogout } from './moji';
-import {
-	findLastMatchIndex,
-	countCharBeforeNewline,
-	countStartingUnimportantChar,
-	setCursorAndScroll
-} from './utils';
+import * as motion from './motion';
+import { setCursorAndScroll } from './utils';
 import * as fs from "fs"; 
 import * as path from "path";
 import {
@@ -357,52 +353,20 @@ export function activate(context: vscode.ExtensionContext) {
 		});
 	});
 
-	let nextLine = vscode.commands.registerCommand('Extension.dltxt.next', () => {
-    const editor = vscode.window.activeTextEditor;
-    if (editor && editor.selection.isEmpty) {
-      
-			const sStart = editor.selection.start.with(editor.selection.start.line + 1, 0);
-			const sEnd = editor.selection.start.with(editor.selection.start.line + 16);
-			const searchTxt = editor.document.getText(new vscode.Range(sStart, sEnd));
-			
-			const idx = searchTxt.search(new RegExp(`(?<=${translatedPrefixRegex}).*`,'m'))
-			if (idx >= 0) {
-				const startIdx = searchTxt.search(new RegExp(`${translatedPrefixRegex}.*`,'m'));
-				let m = countCharBeforeNewline(searchTxt, idx);
-				m += countStartingUnimportantChar(searchTxt, idx);
-				let n: number = 1;
-				for (let i = 0; i < idx; i++) {
-					if (searchTxt[i] == '\n')
-						n++;
-				}
-				setCursorAndScroll(editor, n, m);
-			}
-    }
+	let nextLineCmd = vscode.commands.registerCommand('Extension.dltxt.next', () => {
+		motion.nextLine();
 	});
 
-	let prevLine = vscode.commands.registerCommand('Extension.dltxt.prev', () => {
-		const editor = vscode.window.activeTextEditor;
-		if (editor && editor.selection.isEmpty) {
-			const startLine = Math.max(0, editor.selection.start.line - 16);
-			const endLine = Math.max(0, editor.selection.start.line - 1);
-			const sStart = editor.selection.start.with(startLine, 0);
-			const sEnd = editor.selection.start.with(endLine, 100);
-			const searchTxt = editor.document.getText(new vscode.Range(sStart, sEnd));
-			const pattern = new RegExp(`(?<=${translatedPrefixRegex}).*`, 'm');
-			let match: RegExpExecArray | null;
-			let startIdx = findLastMatchIndex(pattern, searchTxt);
-			if (startIdx != -1) {
-				let m = countCharBeforeNewline(searchTxt, startIdx);
-				m += countStartingUnimportantChar(searchTxt, startIdx);
-				let n: number = 1;
-				for (let i = startIdx; i < searchTxt.length; i++) {
-					if (searchTxt[i] === '\n')
-						n++;
-				}
-				setCursorAndScroll(editor, -n, m);
-			}
-		}
-		
+	let prevLineCmd = vscode.commands.registerCommand('Extension.dltxt.prev', () => {
+		motion.prevLine();
+	});
+
+	let moveToNextLineCmd = vscode.commands.registerCommand('Extension.dltxt.moveToNextLine', () => {
+		motion.moveToNextLine();
+	});
+
+	let moveToPrevLineCmd = vscode.commands.registerCommand('Extension.dltxt.moveToPrevLine', () => {
+		motion.moveToPrevLine();
 	});
 
 	let repeatFirst = vscode.commands.registerCommand('Extension.dltxt.repeatFirst', () => {
@@ -454,8 +418,9 @@ export function activate(context: vscode.ExtensionContext) {
 		newContextMenu_Insert,
 		newContextMenu_Update,
 		setGame,
-		nextLine,
-		prevLine,
+		nextLineCmd,
+		prevLineCmd,
+		moveToNextLineCmd,
 		repeatFirst,
 		copyOriginalCmd,
 		mergeIntoDoubleLine,

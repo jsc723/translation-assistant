@@ -13,7 +13,7 @@ export function findLastMatchIndex(pattern: RegExp, text: string): number {
 		return result;
 }
   
-export function countCharBeforeNewline(text: string, startIdx: number) : number{
+export function countCharBeforeNewline(text: string, startIdx: number) : number {
   let m = 0;
   for (let i = startIdx - 1; i >= 0; i--) {
     if (text[i] === '\n') {
@@ -24,6 +24,24 @@ export function countCharBeforeNewline(text: string, startIdx: number) : number{
   }
   return m;
 };
+
+export function countLineUntil(text: string, startIdx: number): number {
+  let n: number = 1;
+  for (let i = 0; i < startIdx; i++) {
+    if (text[i] == '\n')
+      n++;
+  }
+  return n;
+}
+
+export function countLineFrom(text: string, startIdx: number): number {
+  let n: number = 1;
+  for (let i = startIdx; i < text.length; i++) {
+    if (text[i] === '\n')
+      n++;
+  }
+  return n;
+}
 
 export function setCursorAndScroll(editor: vscode.TextEditor, dn: number, m: number, scroll: boolean = true) {
   const position = editor.selection.active;
@@ -39,12 +57,14 @@ export function setCursorAndScroll(editor: vscode.TextEditor, dn: number, m: num
   }
 };
 
-const dictionary = new Set();
+const dictionary = new Set<string>();
 dictionary.add(" ").add("\t").add("　").add("「").add("『");
-export function countStartingUnimportantChar(txt: string, start: number) : number {
+export function countStartingUnimportantChar(txt: string, start: number, wordSet?: Set<string>) : number {
   let n = 0;
+  if (!wordSet)
+    wordSet = dictionary;
   for (let i = start; i < txt.length; i++) {
-    if (dictionary.has(txt[i]))
+    if (wordSet.has(txt[i]))
       n++;
     else
       break;

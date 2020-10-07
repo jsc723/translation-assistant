@@ -4,7 +4,7 @@
 	"publisher": "jsc723",
 	"icon": "assets/logo.png",
 	"description": "",
-	"version": "2.6.0",
+	"version": "2.7.0",
 	"engines": {
 		"vscode": "^1.48.0"
 	},
@@ -101,6 +101,14 @@
 				"title": "DLTXT: 移动到上一行翻译"
 			},
 			{
+				"command": "Extension.dltxt.moveToNextLine",
+				"title": "DLTXT: 将光标后剪切到下一行翻译"
+			},
+			{
+				"command": "Extension.dltxt.moveToPrevLine",
+				"title": "DLTXT: 将光标前剪切到上一行翻译"
+			},
+			{
 				"command": "Extension.dltxt.repeatFirst",
 				"title": "DLTXT: 重复当前句的第一个字"
 			},
@@ -145,6 +153,14 @@
 			{
 				"command": "Extension.dltxt.prev",
 				"key": "ctrl+\\"
+			},
+			{
+				"command": "Extension.dltxt.moveToNextLine",
+				"key": "ctrl+alt+enter"
+			},
+			{
+				"command": "Extension.dltxt.moveToPrevLine",
+				"key": "ctrl+alt+\\"
 			},
 			{
 				"command": "Extension.dltxt.repeatFirst",
