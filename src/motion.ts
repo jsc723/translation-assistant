@@ -38,6 +38,37 @@ export function nextLine() {
     }
 }
 
+export function nextWord() {
+  const editor = vscode.window.activeTextEditor;
+  if (editor && editor.selection.isEmpty) {
+    const c = editor.selection.start;
+    const text = editor.document.getText(new vscode.Range(c, c.with(c.line, c.character+2)));
+    if (text === '……')
+      utils.setCursorAndScroll(editor, 0, c.character + 2, false);
+    else
+      utils.setCursorAndScroll(editor, 0, c.character + 1, false);
+  }
+}
+export function prevWord() {
+  const editor = vscode.window.activeTextEditor;
+  if (editor && editor.selection.isEmpty) {
+    const c = editor.selection.start;
+    if (c.character === 0) {
+      return;
+    }
+    if (c.character === 1) {
+      utils.setCursorAndScroll(editor, 0, c.character - 1, false);
+      return;
+    }
+    const text = editor.document.getText(new vscode.Range(c, c.with(c.line, c.character-2)));
+    if (text === '……')
+      utils.setCursorAndScroll(editor, 0, c.character - 2, false);
+    else
+      utils.setCursorAndScroll(editor, 0, c.character - 1, false);
+  }
+}
+
+
 
 export function prevLine() {
   const editor = vscode.window.activeTextEditor;

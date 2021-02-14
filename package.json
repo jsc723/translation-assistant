@@ -4,7 +4,7 @@
 	"publisher": "jsc723",
 	"icon": "assets/logo.png",
 	"description": "",
-	"version": "2.7.0",
+	"version": "2.8.1",
 	"engines": {
 		"vscode": "^1.48.0"
 	},
@@ -135,6 +135,14 @@
 			{
 				"command": "Extension.dltxt.searchWord2",
 				"title": "DLTXT: 联网搜索（引擎2）"
+			},
+			{
+				"command": "Extension.dltxt.nextWord",
+				"title": "DLTXT: 下一处翻译点"
+			},
+			{
+				"command": "Extension.dltxt.prevWord",
+				"title": "DLTXT: 上一处翻译点"
 			}
 		],
 		"keybindings": [
@@ -145,6 +153,14 @@
 			{
 				"command": "Extension.dltxt.prev",
 				"key": "alt+\\"
+			},
+			{
+				"command": "Extension.dltxt.nextWord",
+				"key": "alt+]"
+			},
+			{
+				"command": "Extension.dltxt.prevWord",
+				"key": "alt+["
 			},
 			{
 				"command": "Extension.dltxt.next",

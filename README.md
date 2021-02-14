@@ -1,11 +1,8 @@
-#　双行文本翻译辅助工具 ：DLTxT Translate Assistant
+# 双行文本翻译辅助工具 ：DLTXT Translate Assistant
 
 为文字游戏汉化工作提供软件辅助。
-Provides translation support for common type double-line-txt-file-for-translation.
 （注：2.0版本之后的设置文件与之前的版本不兼容，更新后所有设置都将失效，需要重新填写设置）
 
-
----
 ## 功能
 #### 文本高亮
   区分人名栏，原文，译文。
@@ -17,9 +14,11 @@ Provides translation support for common type double-line-txt-file-for-translatio
   - `Ctrl + Alt + m`使用Moji辞書查词
   - `Ctrl + Alt + Enter` 将光标后的译文移动到下一行译文开头（见下面的例子）*
   - `Ctrl + Alt + \` 将光标前的译文移动到上一行译文结尾 *
+  - `Alt + ]` 相当于右箭头，当遇到省略号时移动两次
+  - `Alt + [` 相当于左箭头，当遇到省略号时移动两次
   （\* 只支持部分格式 ）
 
-  ```
+```
   例：(|是光标位置)
 [0x00000028]「あの……こうすればよろしいのでしょうか、
 ;[0x00000028]「那个……|是应该这么做吗，
@@ -27,14 +26,14 @@ Provides translation support for common type double-line-txt-file-for-translatio
 [0x00000029]　この場合」
 ;[0x00000029]　这个场合」
 
--- Ctrl + Alt + Enter -->
+== Ctrl + Alt + Enter ==>
 
 [0x00000028]「あの……こうすればよろしいのでしょうか、
 ;[0x00000028]「那个……|
 
 [0x00000029]　この場合」
 ;[0x00000029]　是应该这么做吗，这个场合」
-  ```
+```
   
 #### 关键字同步
   - 选中文本中一个词语，可右键定义为该词为关键字
@@ -70,6 +69,7 @@ Provides translation support for common type double-line-txt-file-for-translatio
   - Moji辞書不登录时只能显示一个词条，如需查看多个词条请登录
   - 登录/登出：`Ctrl + Shift + p`，搜索`moji`，选择`DLTXT: 登录/登出Moji辞書`
   - 最大显示词条数：请更改设置`dltxt.moji.displayCount`
+  - 注：因为moji辞书没有官方api，所以他们的api随时会改，改了这个功能就有可能失效
 ###### 其他
   - 选中一个词，右键，选择`DLTXT: 联网搜索（引擎x）`
   - 默认引擎1为沪江小D（日=>中），引擎2为weblio類語辞典
@@ -158,6 +158,18 @@ Provides translation support for common type double-line-txt-file-for-translatio
 
 ---
 ## Release Notes
+#### 2.8
+- 添加快捷键
+- 修复moji
+
+#### 2.7
+- 增加调整格式的快捷键
+
+#### 2.6
+- Moji辞書支持登录账号
+
+#### 2.5
+- Moji辞書
 
 #### 2.4
 - 大幅提高文本格式化算法可靠性，解决了添括号时对『双层直角括号』处理不正确的问题
@@ -165,7 +177,7 @@ Provides translation support for common type double-line-txt-file-for-translatio
 
 #### 2.3
 - 快捷键：重复当前句子的第一个字
-- theme: light
+- 增加浅色主题
 
 #### 2.2
 - 联网查词

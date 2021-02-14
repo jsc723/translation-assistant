@@ -361,6 +361,14 @@ export function activate(context: vscode.ExtensionContext) {
 		motion.prevLine();
 	});
 
+	let nextWordCmd = vscode.commands.registerCommand('Extension.dltxt.nextWord', () => {
+		motion.nextWord();
+	});
+
+	let prevWordCmd = vscode.commands.registerCommand('Extension.dltxt.prevWord', () => {
+		motion.prevWord();
+	});
+
 	let moveToNextLineCmd = vscode.commands.registerCommand('Extension.dltxt.moveToNextLine', () => {
 		motion.moveToNextLine();
 	});
@@ -420,6 +428,8 @@ export function activate(context: vscode.ExtensionContext) {
 		setGame,
 		nextLineCmd,
 		prevLineCmd,
+		nextWordCmd,
+		prevWordCmd,
 		moveToNextLineCmd,
 		repeatFirst,
 		copyOriginalCmd,

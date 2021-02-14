@@ -53,11 +53,21 @@ export function mojiTranslate(str: string) {
 }
 
 function getSession(): Promise<MojiSession> {
-  const regAppId = /parseApplicationId_prod:\s*"(\w*)"/;
+  const regLink = /https:\/\/\S*b3f87f7f\S*\.js/;
+  const regAppId = /parseApplicationId:\s*"(\w*)"/;
   if (mojiSession._ApplicationId) {
     return Promise.resolve(mojiSession);
   } else {
-    return axios.get('https://www.mojidict.com/_nuxt/app/b3f87f7f.f1a5be3.js')
+    showChannelMsg(mojiChannel, "正在连接Moji辞书");
+    return axios.get('https://www.mojidict.com/search')
+    .then((value) => {
+      const match = regLink.exec(value.data);
+      if (match) {
+        const link = match[0];
+        return axios.get(link);
+      }
+      throw new Error("cannot find link to application id");
+    })
     .then((value) => {
       const match = regAppId.exec(value.data);
       if (match) {
@@ -123,7 +133,10 @@ export function mojiLogin() {
               printer('登录失败，请检查用户名或密码');
             }
           },
-          (reason) => { printer(reason) }
+          (reason) => { 
+            printer(reason);
+            printer('登录失败，请检查用户名或密码');
+           }
         );
     })
 }
